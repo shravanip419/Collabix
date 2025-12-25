@@ -1,5 +1,6 @@
 import "./Board.css";
 import Sidebar from "./Sidebar";
+import Header from "./Header";
 
 const tasks = [
   {
@@ -63,16 +64,18 @@ const Column = ({ title, status }) => {
 };
 
 const Board = () => {
-  return (  <div>
-    
-    <div className="board">
-        <Sidebar/>
-        
-      <Column title="To Do" status="todo" />
-      <Column title="In Progress" status="in-progress" />
-      <Column title="Done" status="done" />
-     
-    </div>
+  return (
+    <div className="activity-layout">
+      <Sidebar />
+
+      <div className="main-section">
+        <Header/>
+        <div className="board">
+          <Column title="To Do" status="todo" />
+          <Column title="In Progress" status="in-progress" />
+          <Column title="Done" status="done" />
+        </div>
+      </div>
     </div>
   );
 };

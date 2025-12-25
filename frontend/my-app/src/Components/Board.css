@@ -3,7 +3,10 @@
   gap: 20px;
   padding: 1px;
   background: #f7f7f9;
-  height: 100%;
+  display: flex;
+  gap: 24px;
+  padding: 24px 32px;
+  background: transparent;
 }
 
 .column {
