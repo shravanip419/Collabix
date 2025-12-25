@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "./sidebar.css";
+import "./Sidebar.css";
 
 const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
@@ -10,15 +10,12 @@ const Sidebar = () => {
   
       <div className="top">
         <div className="logo">
-          <div className="logo-icon">T</div>
-          {!collapsed && <span>ToggleNest</span>}
+          <div className="logo-icon">C</div>
+          {!collapsed && <span>Collabix</span>}
         </div>
 
-        <button
-          className="collapse-btn"
-          onClick={() => setCollapsed(!collapsed)}
-        >
-          {collapsed ? "›" : "‹"}
+        <button className="collapse-btn" onClick={() => setCollapsed(!collapsed)}>
+        {collapsed ? "›" : "‹"}
         </button>
       </div>
 
