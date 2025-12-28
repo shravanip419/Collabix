@@ -63,6 +63,8 @@
   padding: 10px;
   border-radius: 10px;
   cursor: pointer;
+  text-decoration: none;
+
   color: #4b5563;
   font-size: 17px;
 }

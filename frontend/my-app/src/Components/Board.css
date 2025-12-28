@@ -63,3 +63,15 @@
 .card:active {
   cursor: grabbing;
 }
+.add-btn
+{
+  margin: 10px;
+  background-color: #b9bab9;
+  border: none; 
+  font-size: 18px; 
+}
+.add-btn:hover
+{
+  background-color: #a0a1a0;
+  cursor: pointer;
+}

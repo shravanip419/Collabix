@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./Sidebar.css";
+import { Link } from "react-router-dom";
 
 const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
@@ -27,18 +28,23 @@ const Sidebar = () => {
       </div>
 
       <nav className="nav">
-        <div className="nav-item">
+       <Link to='/'className="nav-item"> 
           🟦 {!collapsed && <span>Dashboard</span>}
-        </div>
-        <div className="nav-item">
+        </Link>
+
+        <Link className="nav-item">
           📁 {!collapsed && <span>Projects</span>}
-        </div>
-        <div className="nav-item">
-          📈 {!collapsed && <span>Activity</span>}
-        </div>
-        <div className="nav-item">
+        </Link>
+
+         <Link to="/activity" className="nav-item">
+        📈 {!collapsed && <span>Activity</span>}
+          
+        </Link>
+        
+       
+        <Link className="nav-item">
           ⚙️ {!collapsed && <span>Settings</span>}
-        </div>
+        </Link>
       </nav>
 
       {!collapsed && (
