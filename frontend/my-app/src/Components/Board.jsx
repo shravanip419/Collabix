@@ -1,53 +1,53 @@
 import "./Board.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
-
-const initialTasks = [
-  {
-    _id: "1",
-    title: "Design system documentation",
-    status: "todo",
-    priority: "high",
-    dueDate: "Jan 20"
-  },
-  {
-    _id: "2",
-    title: "User authentication flow",
-    status: "in-progress",
-    priority: "urgent",
-    dueDate: "Jan 18"
-  },
-  {
-    _id: "3",
-    title: "Analytics dashboard",
-    status: "in-progress",
-    priority: "high",
-    dueDate: "Jan 24"
-  },
-  {
-    _id: "4",
-    title: "Homepage hero section",
-    status: "done",
-    priority: "high",
-    dueDate: "Jan 15"
-  }
-];
+import TaskForm from "./TaskForm";
 
 const Board = () => {
-  const [tasks, setTasks] = useState(initialTasks);
+  const [tasks, setTasks] = useState([]);
+  const [showForm, setShowForm] = useState(false);
+  const [formStatus, setFormStatus] = useState("todo");
 
-  const onDragEnd = (result) => {
+  useEffect(() => {
+    fetch("http://localhost:5000/api/tasks")
+      .then(res => res.json())
+      .then(data => setTasks(data))
+      .catch(err => console.log(err));
+  }, []);
+
+  const onDragEnd = async (result) => {
     if (!result.destination) return;
 
-    const updatedTasks = tasks.map(task =>
-      task._id === result.draggableId
-        ? { ...task, status: result.destination.droppableId }
-        : task
+    const { draggableId, destination } = result;
+    const newStatus = destination.droppableId;
+
+    setTasks(prev =>
+      prev.map(task =>
+        task._id === draggableId
+          ? { ...task, status: newStatus }
+          : task
+      )
     );
 
-    setTasks(updatedTasks);
+    await fetch(`http://localhost:5000/api/tasks/${draggableId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: newStatus })
+    });
+  };
+
+  const handleSaveTask = async (taskData) => {
+    const res = await fetch("http://localhost:5000/api/tasks", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(taskData)
+    });
+
+    const savedTask = await res.json();
+    setTasks(prev => [...prev, savedTask]);
+    setShowForm(false);
   };
 
   return (
@@ -59,17 +59,51 @@ const Board = () => {
 
         <DragDropContext onDragEnd={onDragEnd}>
           <div className="board">
-            <Column title="To Do" status="todo" tasks={tasks} />
-            <Column title="In Progress" status="in-progress" tasks={tasks} />
-            <Column title="Done" status="done" tasks={tasks} />
+            <Column
+              title="To Do"
+              status="todo"
+              tasks={tasks}
+              onAdd={() => {
+                setFormStatus("todo");
+                setShowForm(true);
+              }}
+            />
+
+            <Column
+              title="In Progress"
+              status="in-progress"
+              tasks={tasks}
+              onAdd={() => {
+                setFormStatus("in-progress");
+                setShowForm(true);
+              }}
+            />
+
+            <Column
+              title="Done"
+              status="done"
+              tasks={tasks}
+              onAdd={() => {
+                setFormStatus("done");
+                setShowForm(true);
+              }}
+            />
           </div>
         </DragDropContext>
       </div>
+
+      {showForm && (
+        <TaskForm
+          defaultStatus={formStatus}
+          onClose={() => setShowForm(false)}
+          onSave={handleSaveTask}
+        />
+      )}
     </div>
   );
 };
 
-const Column = ({ title, status, tasks }) => {
+const Column = ({ title, status, tasks, onAdd }) => {
   const filteredTasks = tasks.filter(task => task.status === status);
 
   return (
@@ -82,6 +116,10 @@ const Column = ({ title, status, tasks }) => {
         >
           <div className="column-header">
             <h3>{title}</h3>
+            <div className="column-actions">
+              <span>{filteredTasks.length}</span>
+              <button className="add-btn" onClick={onAdd}>+</button>
+            </div>
           </div>
 
           {filteredTasks.map((task, index) => (
@@ -112,11 +150,7 @@ const Column = ({ title, status, tasks }) => {
 const Card = ({ task }) => (
   <div className="card">
     <h4>{task.title}</h4>
-
-    <span className={`priority ${task.priority}`}>
-      {task.priority}
-    </span>
-
+    <span className={`priority ${task.priority}`}>{task.priority}</span>
     <div className="card-footer">
       <span>{task.dueDate}</span>
     </div>
