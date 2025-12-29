@@ -1,0 +1,103 @@
+.activity-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.main-section {
+  flex: 1;
+  display: flex;
+  margin-left: 285px;
+  flex-direction: column;
+  position: relative;
+  top: -7px;
+  transition: margin-left 0.25s ease;
+}
+.sidebar.collapsed + .main-section {
+  margin-left: 105px;
+}
+
+
+.settings {
+  display: flex;
+  flex-direction: column;
+  padding: 24px 32px;
+  position: relative;
+  justify-content: center;
+  align-items: center;
+ 
+
+}
+
+/* .activities::before {
+  content: "";
+  position: absolute;
+  left: 274px;
+  top: 30px;
+  width: 1px;
+  height: calc(100% - 30px);
+  background-color: #ccccf4;
+} */
+
+
+
+.setting-item
+{
+    display: flex;
+    align-items: center;
+    background-color: white;
+    border: none;
+    border-radius: 10px;
+    margin: 10px;
+    width: 50%;
+    text-decoration: none;
+    padding: 10px;
+    box-shadow: 2px 4px 12px rgba(0, 0, 0, 0.15);
+}
+.title
+{
+    color: black;
+    padding: 0px;
+    margin: 0px;
+    font-weight: 500;
+    font-size: 16px;
+}
+.info
+{
+    color: grey;
+    font-size: 14px;
+}
+.icon{
+    font-size: 25px;
+    color: rgb(103, 101, 101);
+    height: 100%;
+    width: 7%;
+    background-color: rgb(234, 233, 233);
+    border-radius: 10px;
+    text-align: center;
+    margin-right: 30px;
+    margin-left: 10px;
+    padding: 5px;
+ 
+}
+
+
+
+.title,
+.info,
+.icon {
+  transition: color 0.25s ease, background-color 0.25s ease;
+}
+
+
+.setting-item:hover .title {
+  color:  rgb(81, 58, 155); 
+}
+
+.setting-item:hover .info {
+  color: #555; 
+}
+
+.setting-item:hover .icon {
+  color: rgb(81, 58, 155);
+  background-color: #f2f2f2;
+}

@@ -42,7 +42,7 @@ const Sidebar = () => {
         </Link>
         
        
-        <Link className="nav-item">
+        <Link to='/setting' className="nav-item">
           ⚙️ {!collapsed && <span>Settings</span>}
         </Link>
       </nav>
