@@ -4,14 +4,13 @@ const Header = () => {
   return (
     <div className="header">
       <div className="header-left">
-        <h2>Website Redesign</h2>
+        <h2>Plantwise</h2>
         <p>Complete overhaul of the company website</p>
       </div>
-
       <div className="header-right">
         <div className="search-box">
           <span className="search-icon">🔍</span>
-          <input type="text" placeholder="Search..." />
+          <input type="text" placeholder="Search...." />
         </div>
 
         <div className="notification">

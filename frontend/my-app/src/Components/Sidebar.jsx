@@ -15,8 +15,8 @@ const Sidebar = () => {
     <div className={`sidebar ${collapsed ? "collapsed" : ""}`}>
       <div className="top">
         <div className="logo">
-          <div className="logo-icon">C</div>
-          {!collapsed && <span>Collabix</span>}
+          <div className="logo-icon">T</div>
+          {!collapsed && <span>ToggleNest</span>}
         </div>
 
         <button
