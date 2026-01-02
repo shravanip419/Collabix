@@ -443,3 +443,19 @@
   background: #dc2626;
   transform: scale(1.05);
 }
+
+.link-card {
+  text-decoration: none;
+  color: inherit;
+}
+
+.link-card:hover {
+  background-color: #f5f7fb;
+  cursor: pointer;
+}
+
+.link-reset {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
