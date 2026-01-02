@@ -1,8 +1,8 @@
-import Board from './Components/Board.jsx'
+import Board from './pages/Board.jsx'
 import './App.css'
-import  Activity from './Components/Activity.jsx' 
+import  Activity from './pages/Activity.jsx' 
 import {Routes,Route} from 'react-router-dom'
-import Setting from './Components/Setting.jsx'
+import Setting from './pages/Setting.jsx'
 function App() {
 
   
