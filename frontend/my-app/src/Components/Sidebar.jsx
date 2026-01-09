@@ -1,12 +1,3 @@
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import "./Sidebar.css";
-
-=======
-=======
->>>>>>> Stashed changes
 import { useState, useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import "./Sidebar.css";
@@ -15,23 +6,17 @@ import dashboardIcon from "../assets/Dashboard.png";
 import projectsIcon from "../assets/Projects.png";
 import activityIcon from "../assets/Activity.png";
 import settingsIcon from "../assets/Settings.png";
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
 
 const Sidebar = () => {
   const location = useLocation();
 
-  // Routes where sidebar should be EXPANDED by default
+  // Routes where sidebar should be expanded by default
   const expandedRoutes = ["/home", "/projects"];
-
   const isExpandedRoute = expandedRoutes.includes(location.pathname);
 
-  // local UI state
   const [collapsed, setCollapsed] = useState(!isExpandedRoute);
 
-  // 🔑 Sync sidebar state when route changes
+  // Sync sidebar state on route change
   useEffect(() => {
     setCollapsed(!isExpandedRoute);
   }, [isExpandedRoute]);
@@ -82,7 +67,7 @@ const Sidebar = () => {
         </NavLink>
       </nav>
 
-      {/* PROJECTS LIST (only in expanded mode) */}
+      {/* PROJECTS */}
       {!collapsed && (
         <div className="projects">
           <div className="projects-header">
@@ -99,23 +84,6 @@ const Sidebar = () => {
         </div>
       )}
 
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-      {!collapsed && (
-          <div className="user">
-    <span className="avatar">A</span>
-
-    <div className="user-info">
-      <p className="name">Mern</p>
-      <p className="email">success.com</p>
-    </div>
-  </div>
-
-      )}
-    </div>
-=======
-=======
->>>>>>> Stashed changes
       {/* PROFILE */}
       <div className="sidebar-profile">
         <img src="https://i.pravatar.cc/40" alt="user" />
@@ -127,10 +95,6 @@ const Sidebar = () => {
         )}
       </div>
     </aside>
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
   );
 };
 

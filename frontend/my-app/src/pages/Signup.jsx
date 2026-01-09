@@ -1,5 +1,3 @@
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
 import "./Login.css";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -12,9 +10,7 @@ export default function Signup() {
   const [focusField, setFocusField] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
 
-  /* =====================
-     FAST cursor tracking (same as Login)
-  ====================== */
+  /* Cursor tracking */
   useEffect(() => {
     const handleMouseMove = (e) => {
       if (focusField) return;
@@ -45,9 +41,7 @@ export default function Signup() {
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, [focusField]);
 
-  /* =====================
-     LOCK movement (same as Login)
-  ====================== */
+  /* Lock eyes */
   const lockEyes = (x) => {
     pupilsRef.current.forEach((pupil) => {
       if (!pupil) return;
@@ -62,9 +56,7 @@ export default function Signup() {
     if (!focusField && !showPassword) lockEyes(0);
   }, [focusField, showPassword]);
 
-  /* =====================
-     Submit
-  ====================== */
+  /* Submit */
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -80,8 +72,7 @@ export default function Signup() {
   return (
     <div className="login-page">
       <div className="login-container">
-
-        {/* LEFT – SAME SHAPES */}
+        {/* LEFT */}
         <div className="illustration-section">
           <div className="shapes-container">
             {["purple", "orange", "black", "yellow"].map((color, i) => (
@@ -106,7 +97,7 @@ export default function Signup() {
           </div>
         </div>
 
-        {/* RIGHT – SIGNUP FORM */}
+        {/* RIGHT */}
         <div className="form-section">
           <div className="brand">
             <div className="logo">T</div>
@@ -154,7 +145,6 @@ export default function Signup() {
                 required
               />
 
-              {/* ✅ SAME SVG EYE AS LOGIN */}
               <span
                 onClick={() => {
                   setShowPassword(!showPassword);
@@ -166,43 +156,9 @@ export default function Signup() {
                   top: "50%",
                   transform: "translateY(-50%)",
                   cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
                 }}
               >
-                {showPassword ? (
-                  /* Eye Off */
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M3 3L21 21"
-                      stroke="#555"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                    />
-                    <path
-                      d="M10.6 10.6A3 3 0 0012 15a3 3 0 002.4-4.4"
-                      stroke="#555"
-                      strokeWidth="2"
-                    />
-                    <path
-                      d="M2 12s3.6-6 10-6 10 6 10 6"
-                      stroke="#555"
-                      strokeWidth="2"
-                      fill="none"
-                    />
-                  </svg>
-                ) : (
-                  /* Eye */
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M2 12s3.6-6 10-6 10 6 10 6-3.6 6-10 6-10-6-10-6z"
-                      stroke="#555"
-                      strokeWidth="2"
-                      fill="none"
-                    />
-                    <circle cx="12" cy="12" r="3" fill="#555" />
-                  </svg>
-                )}
+                {showPassword ? "🙈" : "👁️"}
               </span>
             </div>
 
@@ -214,86 +170,7 @@ export default function Signup() {
             </p>
           </form>
         </div>
-
       </div>
     </div>
   );
 }
-=======
-=======
->>>>>>> Stashed changes
-import "./Login.css"; // reuse same CSS
-import React from "react";
-import {useNavigate} from "react-router-dom";
-
-function Signup() {
-    const navigate = useNavigate();
-
-    function handleSubmit(e){
-        e.preventDefault();
-        // signup auth ka code
-        // after auth ye
-        navigate("/home");
-    }
-    return (
-    <div className="login-container">
-        <div className="login-left">
-        <div className="brand">
-            <div className="logo">T</div>
-            <span>ToggleNest</span>
-        </div>
-
-        <h1>Create an account</h1>
-        <p className="subtitle">
-            Get started by creating your account
-        </p>
-
-        <form className="form" onSubmit={handleSubmit}>
-            <label>Name</label>
-            <input type="text" name="name" placeholder="Your name"  />
-
-            <label>Username</label>
-            <input type="text" name="username" placeholder="Username"  />
-
-            <label>Email</label>
-            <input type="email" name="email" placeholder="you@example.com"  />
-
-            <label>Password</label>
-            <input type="password" name="password" placeholder="••••••••"  />
-
-            <label>Phone</label>
-            <input type="text" name="phone" placeholder="Phone number"  />
-
-            <button type="submit" className="signin">
-            Create Account →
-            </button>
-
-            <p className="signup">
-            Already have an account? <span>Sign in</span>
-            </p>
-        </form>
-        </div>
-
-        {/* OPTIONAL: right side same as Login */}
-        <div className="login-right">
-        <div className="icon-box">🚀</div>
-        <h2>Join ToggleNest</h2>
-        <p>
-            Build faster, collaborate better, and stay organized from day one.
-        </p>
-
-        <div className="tags">
-            <span>Fast Setup</span>
-            <span>Secure</span>
-            <span>Team Ready</span>
-        </div>
-        </div>
-    </div>
-    );
-}
-
-export default Signup;
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
