@@ -1,4 +1,5 @@
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 /* PAGE */
 .login-page {
   min-height: 100vh;
@@ -300,6 +301,8 @@ input {
 .login-btn {
   margin-top: 10px;
 =======
+=======
+>>>>>>> Stashed changes
 * {
   margin: 0;
   padding: 0;
@@ -454,5 +457,8 @@ input {
   border-radius: 999px;
   font-size: 14px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 }

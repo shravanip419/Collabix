@@ -1,4 +1,5 @@
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 import "./Login.css";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -219,6 +220,8 @@ export default function Signup() {
   );
 }
 =======
+=======
+>>>>>>> Stashed changes
 import "./Login.css"; // reuse same CSS
 import React from "react";
 import {useNavigate} from "react-router-dom";
@@ -290,4 +293,7 @@ function Signup() {
 }
 
 export default Signup;
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes

@@ -1,4 +1,5 @@
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 import "./Login.css";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -203,6 +204,8 @@ export default function Login() {
   );
 }
 =======
+=======
+>>>>>>> Stashed changes
 import "./Login.css"
 import React from "react";
 import {useNavigate} from "react-router-dom";
@@ -274,5 +277,9 @@ function Login()
     </>
 }
 
+<<<<<<< Updated upstream
+export default Login;
+>>>>>>> Stashed changes
+=======
 export default Login;
 >>>>>>> Stashed changes

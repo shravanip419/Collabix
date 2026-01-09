@@ -1,4 +1,5 @@
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 import { Routes, Route, Navigate } from "react-router-dom";
 
 import Login from "./pages/Login.jsx";
@@ -9,10 +10,16 @@ import { Routes, Route, useLocation } from "react-router-dom";
 import Sidebar from "./Components/Sidebar";
 import Header from "./Components/Header";
 >>>>>>> Stashed changes
+=======
+import { Routes, Route, useLocation } from "react-router-dom";
+import Sidebar from "./Components/Sidebar";
+import Header from "./Components/Header";
+>>>>>>> Stashed changes
 import Board from "./pages/Board.jsx";
 import Activity from "./pages/Activity.jsx";
 import Setting from "./pages/Setting.jsx";
 import Profile from "./pages/Profile.jsx";
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 
 import "./App.css";
@@ -53,6 +60,20 @@ function App() {
   // Routes that should NOT show the Sidebar/Header
   const isAuthPage = ["/", "/login", "/signup"].includes(location.pathname);
 
+=======
+import Hero from "./pages/Hero";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import Home from "./pages/Home";
+import "./App.css";
+
+function App() {
+  const location = useLocation();
+  
+  // Routes that should NOT show the Sidebar/Header
+  const isAuthPage = ["/", "/login", "/signup"].includes(location.pathname);
+
+>>>>>>> Stashed changes
   return (
     <div className={isAuthPage ? "auth-root" : "app"}>
       {!isAuthPage && <Sidebar />}
@@ -77,6 +98,9 @@ function App() {
         </div>
       </main>
     </div>
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
   );
 }

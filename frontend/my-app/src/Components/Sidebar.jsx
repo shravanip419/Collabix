@@ -1,9 +1,12 @@
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import "./Sidebar.css";
 
 =======
+=======
+>>>>>>> Stashed changes
 import { useState, useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import "./Sidebar.css";
@@ -12,6 +15,9 @@ import dashboardIcon from "../assets/Dashboard.png";
 import projectsIcon from "../assets/Projects.png";
 import activityIcon from "../assets/Activity.png";
 import settingsIcon from "../assets/Settings.png";
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 
 const Sidebar = () => {
@@ -94,6 +100,7 @@ const Sidebar = () => {
       )}
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
       {!collapsed && (
           <div className="user">
     <span className="avatar">A</span>
@@ -107,6 +114,8 @@ const Sidebar = () => {
       )}
     </div>
 =======
+=======
+>>>>>>> Stashed changes
       {/* PROFILE */}
       <div className="sidebar-profile">
         <img src="https://i.pravatar.cc/40" alt="user" />
@@ -118,6 +127,9 @@ const Sidebar = () => {
         )}
       </div>
     </aside>
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
   );
 };
