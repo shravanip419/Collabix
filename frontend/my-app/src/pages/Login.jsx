@@ -8,10 +8,6 @@ export default function Login() {
 
   const [focusField, setFocusField] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
-
-  /* =====================
-     FAST cursor tracking
-  ====================== */
   useEffect(() => {
     const handleMouseMove = (e) => {
       if (focusField) return;
@@ -42,9 +38,6 @@ export default function Login() {
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, [focusField]);
 
-  /* =====================
-     SLOW lock movement
-  ====================== */
   const lockEyes = (x) => {
     pupilsRef.current.forEach((pupil) => {
       if (!pupil) return;
