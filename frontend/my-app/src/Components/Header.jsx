@@ -19,6 +19,7 @@ const Header = ({title, subtitle}) => {
   };
 
   return (
+    <div className="header-wrapper">
     <header className="topbar">
       <div className="header-info">
         <h1>{title}</h1>
@@ -27,8 +28,7 @@ const Header = ({title, subtitle}) => {
 
       <div className="header-right">
         <div className="search-box">
-          <span className="search-icon">🔍</span>
-          <input type="text" className="search-input" placeholder="Search tasks..." />
+          🔍<input type="text" className="search-input" placeholder="Search tasks..." />
         </div>
 
         <button className="theme-btn" onClick={toggleTheme}>
@@ -40,6 +40,7 @@ const Header = ({title, subtitle}) => {
         </div>
       </div>
     </header>
+    </div>
   );
 };
 
