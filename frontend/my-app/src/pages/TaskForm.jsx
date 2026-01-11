@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./TaskForm.css";
 
 const TaskForm = ({ onClose, onSave, defaultStatus }) => {
@@ -9,6 +9,11 @@ const TaskForm = ({ onClose, onSave, defaultStatus }) => {
   const [assignee, setAssignee] = useState("");
   const [description, setDescription] = useState("");
 
+  // 🔥 CRITICAL FIX
+  useEffect(() => {
+    setStatus(defaultStatus);
+  }, [defaultStatus]);
+
   const handleSave = () => {
     if (!title.trim()) return;
 
@@ -18,7 +23,7 @@ const TaskForm = ({ onClose, onSave, defaultStatus }) => {
       priority,
       dueDate,
       assignee,
-      description
+      description,
     });
   };
 
@@ -41,7 +46,10 @@ const TaskForm = ({ onClose, onSave, defaultStatus }) => {
           <div className="row">
             <div>
               <label>Status</label>
-              <select value={status} onChange={(e) => setStatus(e.target.value)}>
+              <select
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
+              >
                 <option value="todo">To Do</option>
                 <option value="in-progress">In Progress</option>
                 <option value="done">Done</option>
@@ -50,7 +58,10 @@ const TaskForm = ({ onClose, onSave, defaultStatus }) => {
 
             <div>
               <label>Priority</label>
-              <select value={priority} onChange={(e) => setPriority(e.target.value)}>
+              <select
+                value={priority}
+                onChange={(e) => setPriority(e.target.value)}
+              >
                 <option value="low">Low</option>
                 <option value="medium">Medium</option>
                 <option value="high">High</option>

@@ -55,6 +55,7 @@ export default function Login() {
     if (!focusField && !showPassword) lockEyes(0);
   }, [focusField, showPassword]);
 
+  // main
  const handleSubmit = async (e) => {
   e.preventDefault();
 
@@ -107,7 +108,7 @@ export default function Login() {
           </div>
         </div>
 
-        {/* RIGHT */}
+        {/* form */}
         <div className="form-section">
           <div className="brand">
             <div className="logo">T</div>

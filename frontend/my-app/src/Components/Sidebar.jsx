@@ -3,37 +3,51 @@ import { NavLink, useLocation } from "react-router-dom";
 import "./Sidebar.css";
 
 import dashboardIcon from "../assets/Dashboard.png";
-import projectsIcon from "../assets/Projects.png";
 import activityIcon from "../assets/Activity.png";
 import settingsIcon from "../assets/Settings.png";
+
+import ProjectForm from "../pages/ProjectForm";
 
 const Sidebar = () => {
   const location = useLocation();
 
-  // Routes where sidebar should be expanded by default
-  const expandedRoutes = ["/home", "/projects"];
+  const expandedRoutes = ["/home"];
   const isExpandedRoute = expandedRoutes.includes(location.pathname);
 
   const [collapsed, setCollapsed] = useState(!isExpandedRoute);
   const [manualToggle, setManualToggle] = useState(false);
+  const [projects, setProjects] = useState([]);
+  const [showProjectForm, setShowProjectForm] = useState(false);
 
-  // Sync sidebar state on route change
   useEffect(() => {
-    if (!manualToggle) {
-      setCollapsed(!isExpandedRoute);
-    }
+    if (!manualToggle) setCollapsed(!isExpandedRoute);
   }, [location.pathname]);
 
+  //FETCH PROJECTS
+  useEffect(() => {
+    fetch("http://localhost:5000/api/projects")
+      .then(res => res.json())
+      .then(setProjects)
+      .catch(console.error);
+  }, []);
+
   const toggleSidebar = () => {
-    setCollapsed((prev) => !prev);
+    setCollapsed(prev => !prev);
     setManualToggle(true);
   };
 
-  const projectsData = [
-    { id: 1, name: "Website Redesign", color: "blue" },
-    { id: 2, name: "Mobile App MVP", color: "green" },
-    { id: 3, name: "Marketing Campaign", color: "orange" },
-  ];
+  // 🔥 SAVE PROJECT
+  const saveProject = async (name) => {
+    const res = await fetch("http://localhost:5000/api/projects", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name }),
+    });
+
+    const project = await res.json();
+    setProjects(prev => [...prev, project]);
+    setShowProjectForm(false);
+  };
 
   return (
     <aside className={`sidebar ${collapsed ? "collapsed" : ""}`}>
@@ -44,53 +58,24 @@ const Sidebar = () => {
           {!collapsed && <span>ToggleNest</span>}
         </div>
 
-        <button
-          className="collapse-toggle"
-          onClick={toggleSidebar}
-          aria-label="Toggle sidebar"
-        >
+        <button className="collapse-toggle" onClick={toggleSidebar}>
           {collapsed ? "›" : "‹"}
         </button>
       </div>
 
       {/* NAV */}
       <nav className="nav">
-        <NavLink
-          to="/home"
-          className={({ isActive }) =>
-            `nav-item ${isActive ? "active" : ""}`
-          }
-        >
+        <NavLink to="/home" className="nav-item">
           <img src={dashboardIcon} alt="Dashboard" />
           {!collapsed && <span>Dashboard</span>}
         </NavLink>
 
-        <NavLink
-          to="/board"
-          className={({ isActive }) =>
-            `nav-item ${isActive ? "active" : ""}`
-          }
-        >
-          <img src={projectsIcon} alt="Projects" />
-          {!collapsed && <span>Projects</span>}
-        </NavLink>
-
-        <NavLink
-          to="/activity"
-          className={({ isActive }) =>
-            `nav-item ${isActive ? "active" : ""}`
-          }
-        >
+        <NavLink to="/activity" className="nav-item">
           <img src={activityIcon} alt="Activity" />
           {!collapsed && <span>Activity</span>}
         </NavLink>
 
-        <NavLink
-          to="/settings"
-          className={({ isActive }) =>
-            `nav-item ${isActive ? "active" : ""}`
-          }
-        >
+        <NavLink to="/settings" className="nav-item">
           <img src={settingsIcon} alt="Settings" />
           {!collapsed && <span>Settings</span>}
         </NavLink>
@@ -101,28 +86,34 @@ const Sidebar = () => {
         <div className="projects">
           <div className="projects-header">
             <span>PROJECTS</span>
-            <button className="add-project-btn">＋</button>
+            <button
+              className="add-project-btn"
+              onClick={() => setShowProjectForm(true)}
+            >
+              ＋
+            </button>
           </div>
 
-          {projectsData.map((project) => (
-            <div key={project.id} className="project-item">
-              <span className={`dot ${project.color}`} />
+          {/* 🔥 PROJECT FORM COMPONENT */}
+          {showProjectForm && (
+            <ProjectForm
+              onSave={saveProject}
+              onCancel={() => setShowProjectForm(false)}
+            />
+          )}
+
+          {projects.map(project => (
+            <NavLink
+              key={project._id}
+              to={`/board/${project._id}`}
+              className="project-item"
+            >
+              <span className="dot blue" />
               {project.name}
-            </div>
+            </NavLink>
           ))}
         </div>
       )}
-
-      {/* PROFILE */}
-      <div className="sidebar-profile">
-        <img src="https://i.pravatar.cc/40" alt="user" />
-        {!collapsed && (
-          <div className="profile-info">
-            <div className="name">Alex Johnson</div>
-            <div className="email">alex@togglenest.com</div>
-          </div>
-        )}
-      </div>
     </aside>
   );
 };

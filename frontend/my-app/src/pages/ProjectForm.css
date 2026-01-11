@@ -1,0 +1,26 @@
+.project-form {
+  margin: 8px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.project-form input {
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  font-size: 13px;
+}
+
+.project-form-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.project-form-actions button {
+  flex: 1;
+  padding: 5px;
+  font-size: 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}

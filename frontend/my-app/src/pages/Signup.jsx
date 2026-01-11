@@ -10,7 +10,15 @@ export default function Signup() {
   const [focusField, setFocusField] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
 
-  /* Cursor tracking */
+  // 🌸 FORM STATE (THIS WAS MISSING)
+  const [formData, setFormData] = useState({
+    fullName: "",
+    username: "",
+    email: "",
+    password: "",
+  });
+
+  /* 👀 Cursor tracking */
   useEffect(() => {
     const handleMouseMove = (e) => {
       if (focusField) return;
@@ -41,7 +49,7 @@ export default function Signup() {
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, [focusField]);
 
-  /* Lock eyes */
+  /* 👁 Lock eyes */
   const lockEyes = (x) => {
     pupilsRef.current.forEach((pupil) => {
       if (!pupil) return;
@@ -57,17 +65,46 @@ export default function Signup() {
   }, [focusField, showPassword]);
 
   /* Submit */
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    shapesRef.current.forEach((shape) => {
-      shape.classList.remove("shake-animation");
-      shape.classList.add("nod-animation");
-      setTimeout(() => shape.classList.remove("nod-animation"), 1000);
-    });
+  try {
+    const res = await fetch(
+      "http://localhost:5000/api/auth/signup",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      }
+    );
 
-    setTimeout(() => navigate("/board"), 1200);
-  };
+    const text = await res.text();
+    let data;
+
+    try {
+      data = JSON.parse(text);
+    } catch {
+      console.error("HTML response:", text);
+      alert("Wrong API route. Check backend URL.");
+      return;
+    }
+
+    if (!res.ok) {
+      alert(data.message || "Signup failed");
+      return;
+    }
+
+    alert("Signup successful 🎉");
+    navigate("/board");
+
+  } catch (err) {
+    console.error(err);
+    alert("Server not reachable 💀");
+  }
+};
+
 
   return (
     <div className="login-page">
@@ -86,7 +123,9 @@ export default function Signup() {
                     <div key={j} className="eye">
                       <div
                         className="pupil"
-                        ref={(el) => (pupilsRef.current[i * 2 + j] = el)}
+                        ref={(el) =>
+                          (pupilsRef.current[i * 2 + j] = el)
+                        }
                       />
                     </div>
                   ))}
@@ -112,6 +151,10 @@ export default function Signup() {
             <input
               type="text"
               placeholder="Your name"
+              value={formData.fullName}
+              onChange={(e) =>
+                setFormData({ ...formData, fullName: e.target.value })
+              }
               onFocus={() => setFocusField("text")}
               onBlur={() => setFocusField(null)}
               required
@@ -121,6 +164,10 @@ export default function Signup() {
             <input
               type="text"
               placeholder="Username"
+              value={formData.username}
+              onChange={(e) =>
+                setFormData({ ...formData, username: e.target.value })
+              }
               onFocus={() => setFocusField("text")}
               onBlur={() => setFocusField(null)}
               required
@@ -130,6 +177,10 @@ export default function Signup() {
             <input
               type="email"
               placeholder="you@example.com"
+              value={formData.email}
+              onChange={(e) =>
+                setFormData({ ...formData, email: e.target.value })
+              }
               onFocus={() => setFocusField("text")}
               onBlur={() => setFocusField(null)}
               required
@@ -140,6 +191,10 @@ export default function Signup() {
               <input
                 type={showPassword ? "text" : "password"}
                 placeholder="••••••••"
+                value={formData.password}
+                onChange={(e) =>
+                  setFormData({ ...formData, password: e.target.value })
+                }
                 onFocus={() => setFocusField("password")}
                 onBlur={() => setFocusField(null)}
                 required

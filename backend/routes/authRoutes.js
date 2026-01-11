@@ -5,19 +5,24 @@ import User from "../models/User.js";
 
 const router = express.Router();
 
-
 router.post("/signup", async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { fullName, username, email, password } = req.body;
+
+    if (!fullName || !username || !email || !password) {
+      return res.status(400).json({ message: "All fields required" });
+    }
 
     const userExists = await User.findOne({ email });
-    if (userExists)
+    if (userExists) {
       return res.status(400).json({ message: "User already exists" });
+    }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
     await User.create({
-      name,
+      name: fullName,   // 👈 mapping fixed
+      username,
       email,
       password: hashedPassword,
     });
@@ -27,7 +32,6 @@ router.post("/signup", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-
 
 router.post("/login", async (req, res) => {
   try {
@@ -51,8 +55,8 @@ router.post("/login", async (req, res) => {
       token,
       user: {
         id: user._id,
-        email: user.email,
         name: user.name,
+        email: user.email,
       },
     });
   } catch (err) {
