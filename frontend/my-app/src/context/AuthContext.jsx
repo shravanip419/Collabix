@@ -9,16 +9,26 @@ export const AuthProvider = ({ children }) => {
 
   // 🔁 Load auth from localStorage on refresh
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    const storedToken = localStorage.getItem("token");
+    try {
+        const storedUser = localStorage.getItem("user");
+        const storedToken = localStorage.getItem("token");
 
-    if (storedUser && storedToken) {
-      setUser(JSON.parse(storedUser));
-      setToken(storedToken);
+        if (
+        storedUser &&
+        storedUser !== "undefined" &&
+        storedToken
+        ) {
+        setUser(JSON.parse(storedUser));
+        setToken(storedToken);
+        }
+    } catch (err) {
+        console.error("Auth load failed, clearing storage", err);
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+    } finally {
+        setLoading(false);
     }
-
-    setLoading(false);
-  }, []);
+    }, []);
 
   // ✅ CORRECT LOGIN
   const login = (data) => {
