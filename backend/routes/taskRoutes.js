@@ -23,7 +23,7 @@ router.get("/", async (req, res) => {
 // CREATE task
 router.post("/", async (req, res) => {
   try {
-    console.log("Incoming task:", req.body); // 🔥 DEBUG LINE
+    console.log("Incoming task:", req.body); 
 
     const task = await Task.create(req.body);
     res.status(201).json(task);
