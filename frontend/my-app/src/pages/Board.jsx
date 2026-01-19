@@ -10,15 +10,14 @@ const Board = () => {
   const [showForm, setShowForm] = useState(false);
   const [formStatus, setFormStatus] = useState("todo");
 
-  // 🔥 FETCH TASKS FOR PROJECT
+  const user = JSON.parse(localStorage.getItem("user"));
+
   useEffect(() => {
     fetch(`http://localhost:5000/api/tasks?projectId=${projectId}`)
       .then(res => res.json())
-      .then(setTasks)
-      .catch(console.error);
+      .then(setTasks);
   }, [projectId]);
 
-  // 🔥 DRAG & DROP
   const onDragEnd = async (result) => {
     if (!result.destination) return;
 
@@ -34,11 +33,13 @@ const Board = () => {
     await fetch(`http://localhost:5000/api/tasks/${draggableId}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status: newStatus }),
+      body: JSON.stringify({
+        status: newStatus,
+        user: { name: user?.name },
+      }),
     });
   };
 
-  // 🔥 SAVE TASK WITH PROJECT ID
   const handleSaveTask = async (taskData) => {
     const res = await fetch("http://localhost:5000/api/tasks", {
       method: "POST",
@@ -46,6 +47,7 @@ const Board = () => {
       body: JSON.stringify({
         ...taskData,
         projectId,
+        user: { name: user?.name },
       }),
     });
 
@@ -61,11 +63,9 @@ const Board = () => {
           <Column title="To Do" status="todo" tasks={tasks} onAdd={() => {
             setFormStatus("todo"); setShowForm(true);
           }} />
-
           <Column title="In Progress" status="in-progress" tasks={tasks} onAdd={() => {
             setFormStatus("in-progress"); setShowForm(true);
           }} />
-
           <Column title="Done" status="done" tasks={tasks} onAdd={() => {
             setFormStatus("done"); setShowForm(true);
           }} />

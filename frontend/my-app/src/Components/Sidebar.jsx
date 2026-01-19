@@ -19,11 +19,13 @@ const Sidebar = () => {
   const [projects, setProjects] = useState([]);
   const [showProjectForm, setShowProjectForm] = useState(false);
 
-  useEffect(() => {
-    if (!manualToggle) setCollapsed(!isExpandedRoute);
-  }, [location.pathname]);
+useEffect(() => {
+  if (!manualToggle) {
+    setCollapsed(!isExpandedRoute);
+  }
+}, [location.pathname, isExpandedRoute, manualToggle]);
 
-  //FETCH PROJECTS
+  // FETCH PROJECTS
   useEffect(() => {
     fetch("http://localhost:5000/api/projects")
       .then(res => res.json())
@@ -36,7 +38,7 @@ const Sidebar = () => {
     setManualToggle(true);
   };
 
-  // 🔥 SAVE PROJECT
+  // SAVE PROJECT
   const saveProject = async (name) => {
     const res = await fetch("http://localhost:5000/api/projects", {
       method: "POST",
@@ -94,7 +96,6 @@ const Sidebar = () => {
             </button>
           </div>
 
-          {/* 🔥 PROJECT FORM COMPONENT */}
           {showProjectForm && (
             <ProjectForm
               onSave={saveProject}
@@ -102,11 +103,16 @@ const Sidebar = () => {
             />
           )}
 
+          {/* ✅ IMPORTANT CHANGE HERE */}
           {projects.map(project => (
             <NavLink
               key={project._id}
               to={`/board/${project._id}`}
               className="project-item"
+              onClick={() => {
+                localStorage.setItem("activeProjectId", project._id);
+                localStorage.setItem("activeProjectName", project.name);
+              }}
             >
               <span className="dot blue" />
               {project.name}
