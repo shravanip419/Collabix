@@ -1,12 +1,16 @@
 import "./Login.css";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import api from "../../src/api/axios"
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const navigate = useNavigate();
+  const { login } = useAuth();
+  // const { login } = useAuth();
   const pupilsRef = useRef([]);
 
   const [focusField, setFocusField] = useState(null);
@@ -55,34 +59,21 @@ export default function Login() {
     if (!focusField && !showPassword) lockEyes(0);
   }, [focusField, showPassword]);
 
-  // main
- const handleSubmit = async (e) => {
-  e.preventDefault();
-
-  try {
-    const res = await fetch("http://localhost:5000/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      alert(data.message || "Login failed");
-      return;
+  // const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const { data } = await api.post("/auth/login", {
+        email,
+        password,
+      });
+      localStorage.setItem("token", data.token); 
+      login(data);
+      navigate("/home");
+    } catch (err) {
+      alert(err.response?.data?.message || "Login failed");
     }
-
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("user", JSON.stringify(data.user));
-
-    navigate("/board");
-  } catch (err) {
-    alert("Server error");
-  }
-};
-
-
+  };
   return (
     <div className="login-page">
       <div className="login-container">
@@ -143,8 +134,6 @@ export default function Login() {
                 required
               />
 
-
-              {/* SVG EYE – extreme right */}
               <span
                 onClick={() => {
                   setShowPassword(!showPassword);

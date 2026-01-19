@@ -4,7 +4,6 @@ import Project from "../models/Project.js";
 
 const router = express.Router();
 
-// 🔹 PROJECT-WISE ACTIVITY (existing)
 router.get("/", async (req, res) => {
   try {
     const { projectId } = req.query;
@@ -23,7 +22,6 @@ router.get("/", async (req, res) => {
   }
 });
 
-// 🔥 RECENT ACTIVITIES (ALL PROJECTS) — NEW
 router.get("/recent", async (req, res) => {
   try {
     const limit = Number(req.query.limit) || 5;
@@ -34,7 +32,7 @@ router.get("/recent", async (req, res) => {
       .limit(limit)
       .lean();
 
-    // attach project name
+   
     const projectIds = activities.map(a => a.projectId);
     const projects = await Project.find({ _id: { $in: projectIds } });
 

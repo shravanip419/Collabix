@@ -6,7 +6,7 @@ const Home = () => {
 
   useEffect(() => {
     fetch("http://localhost:5000/api/activities/recent?limit=5")
-      .then(res => res.json())
+      .then((res) => res.json())
       .then(setActivities)
       .catch(console.error);
   }, []);
@@ -27,54 +27,50 @@ const Home = () => {
   };
 
   return (
-    <div className="home-dashboard">
-      {/* STATS CARDS */}
-      <section className="stats">
-        <div className="stat-card purple">
-          <p>Total Projects</p>
-          <h2>3</h2>
-        </div>
-        <div className="stat-card green">
-          <p>Tasks Completed</p>
-          <h2>2</h2>
-          <span>↑ 12% from last week</span>
-        </div>
-        <div className="stat-card yellow">
-          <p>Tasks Pending</p>
-          <h2>6</h2>
-        </div>
-        <div className="stat-card">
-          <p>Team Productivity</p>
-          <h2>87%</h2>
-          <span>↑ 5% from last week</span>
-        </div>
-      </section>
+    <div className="home">
+      <div className="dashboard">
 
-      <section className="grid">
-        <div className="panel">
-          <div className="panel-header">
-            <h3>Your Projects</h3>
-            <a href="#">View all</a>
-          </div>
-        </div>
-
-        {/* 🔥 RECENT ACTIVITY */}
-        <div className="panel">
-          <div className="panel-header">
-            <h3>Recent Activity</h3>
-            <a href="#">View all</a>
-          </div>
-
-          {activities.map((activity) => (
-            <div key={activity._id} className="activity">
-              <strong>{getActivityText(activity)}</strong>
-              <div style={{ fontSize: "12px", color: "#777" }}>
-                {activity.projectName}
-              </div>
+        {/* STATS CARDS */}
+        <section className="stats">
+          <div className="stat-card stat-purple">
+            <div className="stat-info">
+              <h4>Total Projects</h4>
+              <h1>3</h1>
             </div>
-          ))}
-        </div>
-      </section>
+            <div className="stat-icon">📁</div>
+          </div>
+        </section>
+
+        {/* GRID SECTION */}
+        <section className="grid">
+
+          {/* YOUR PROJECTS */}
+          <div className="panel">
+            <div className="panel-header">
+              <h3>Your Projects</h3>
+              <a href="#">View all</a>
+            </div>
+          </div>
+
+          {/* RECENT ACTIVITY */}
+          <div className="panel">
+            <div className="panel-header">
+              <h3>Recent Activity</h3>
+              <a href="#">View all</a>
+            </div>
+
+            {activities.map((activity) => (
+              <div key={activity._id} className="activity">
+                <strong>{getActivityText(activity)}</strong>
+                <div style={{ fontSize: "12px", color: "#777" }}>
+                  {activity.projectName}
+                </div>
+              </div>
+            ))}
+          </div>
+
+        </section>
+      </div>
     </div>
   );
 };

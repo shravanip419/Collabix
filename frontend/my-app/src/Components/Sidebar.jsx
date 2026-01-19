@@ -1,36 +1,49 @@
 import { useState, useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import "./Sidebar.css";
+import api from "../api/axios";
 
 import dashboardIcon from "../assets/Dashboard.png";
 import activityIcon from "../assets/Activity.png";
 import settingsIcon from "../assets/Settings.png";
+import projectsIcon from "../assets/Projects.png";
 
 import ProjectForm from "../pages/ProjectForm";
 
 const Sidebar = () => {
   const location = useLocation();
 
-  const expandedRoutes = ["/home"];
-  const isExpandedRoute = expandedRoutes.includes(location.pathname);
+  const isExpandedRoute =
+    location.pathname.startsWith("/home") ||
+    location.pathname.startsWith("/board");
 
   const [collapsed, setCollapsed] = useState(!isExpandedRoute);
   const [manualToggle, setManualToggle] = useState(false);
   const [projects, setProjects] = useState([]);
   const [showProjectForm, setShowProjectForm] = useState(false);
 
-useEffect(() => {
-  if (!manualToggle) {
-    setCollapsed(!isExpandedRoute);
-  }
-}, [location.pathname, isExpandedRoute, manualToggle]);
-
-  // FETCH PROJECTS
+  // Auto collapse/expand on route change
   useEffect(() => {
-    fetch("http://localhost:5000/api/projects")
-      .then(res => res.json())
-      .then(setProjects)
-      .catch(console.error);
+    if (!manualToggle) setCollapsed(!isExpandedRoute);
+  }, [location.pathname]);
+
+  // Reset manual override when route changes
+  useEffect(() => {
+    setManualToggle(false);
+  }, [location.pathname]);
+
+  // Fetch projects
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const { data } = await api.get("/projects");
+        setProjects(data);
+      } catch (err) {
+        console.error("Failed to load projects", err);
+      }
+    };
+
+    fetchProjects();
   }, []);
 
   const toggleSidebar = () => {
@@ -38,17 +51,15 @@ useEffect(() => {
     setManualToggle(true);
   };
 
-  // SAVE PROJECT
+  // Create project (AUTH SAFE)
   const saveProject = async (name) => {
-    const res = await fetch("http://localhost:5000/api/projects", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name }),
-    });
-
-    const project = await res.json();
-    setProjects(prev => [...prev, project]);
-    setShowProjectForm(false);
+    try {
+      const { data } = await api.post("/projects", { name });
+      setProjects(prev => [...prev, data]);
+      setShowProjectForm(false);
+    } catch (err) {
+      console.error("Create project failed", err);
+    }
   };
 
   return (
@@ -71,6 +82,12 @@ useEffect(() => {
           <img src={dashboardIcon} alt="Dashboard" />
           {!collapsed && <span>Dashboard</span>}
         </NavLink>
+
+        <NavLink to="/board" className="nav-item">
+          <img src={projectsIcon} alt="Projects" />
+          {!collapsed && <span>Projects</span>}
+        </NavLink>
+
 
         <NavLink to="/activity" className="nav-item">
           <img src={activityIcon} alt="Activity" />
@@ -108,11 +125,9 @@ useEffect(() => {
             <NavLink
               key={project._id}
               to={`/board/${project._id}`}
-              className="project-item"
-              onClick={() => {
-                localStorage.setItem("activeProjectId", project._id);
-                localStorage.setItem("activeProjectName", project.name);
-              }}
+              className={({ isActive }) =>
+                `project-item ${isActive ? "active" : ""}`
+              }
             >
               <span className="dot blue" />
               {project.name}

@@ -9,10 +9,6 @@ import activityRoutes from "./routes/ActivityRoutes.js";
 
 
 
-
-
-
-
 dotenv.config();
 
 const app = express();

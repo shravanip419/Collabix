@@ -30,7 +30,7 @@ function Activity() {
     if (type === "created") return "🆕";
   };
 
-  // 🔥 FIXED TEXT FORMAT
+
   const getTitle = (activity) => {
     const name = activity.user?.name || "Someone";
 

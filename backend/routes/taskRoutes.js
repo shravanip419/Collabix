@@ -1,28 +1,56 @@
 import express from "express";
 import Task from "../models/Task.js";
 import Activity from "../models/Activity.js";
+import auth from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-// GET tasks (by project)
-router.get("/", async (req, res) => {
+/**
+ * GET TASKS BY PROJECT
+ */
+router.get("/", auth, async (req, res) => {
   try {
     const { projectId } = req.query;
+
     if (!projectId) {
       return res.status(400).json({ message: "projectId is required" });
     }
 
-    const tasks = await Task.find({ projectId });
+    const tasks = await Task.find({
+      projectId,
+      userId: req.userId,
+    });
+
     res.json(tasks);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// CREATE task
-router.post("/", async (req, res) => {
+/**
+ * CREATE TASK
+ */
+router.post("/", auth, async (req, res) => {
   try {
-    const task = await Task.create(req.body);
+    const { title, status, priority, dueDate, description, projectId } =
+      req.body;
+
+    if (!title || !projectId) {
+      return res
+        .status(400)
+        .json({ message: "title and projectId are required" });
+    }
+
+    const task = await Task.create({
+      title,
+      status,
+      priority,
+      dueDate,
+      description,
+      projectId,
+      userId: req.userId,
+    });
+
     const user = req.body.user || { name: "Unknown User" };
 
     await Activity.create({
@@ -43,13 +71,22 @@ router.post("/", async (req, res) => {
   }
 });
 
-// UPDATE task (status / priority)
-router.patch("/:id", async (req, res) => {
+/**
+ * UPDATE TASK
+ */
+router.patch("/:id", auth, async (req, res) => {
   try {
-    const oldTask = await Task.findById(req.params.id);
+    const oldTask = await Task.findOne({
+      _id: req.params.id,
+      userId: req.userId,
+    });
 
-    const updatedTask = await Task.findByIdAndUpdate(
-      req.params.id,
+    if (!oldTask) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
+    const updatedTask = await Task.findOneAndUpdate(
+      { _id: req.params.id, userId: req.userId },
       req.body,
       { new: true }
     );
@@ -59,20 +96,16 @@ router.patch("/:id", async (req, res) => {
     let type = "updated";
     let message = "Task updated";
 
-    // ✅ STATUS CHANGE
     if (req.body.status && req.body.status !== oldTask.status) {
       if (req.body.status === "done") {
         type = "completed";
         message = "Moved to Done";
       } else {
-        type = "updated";
-        message = `Moved to In Progress`;
+        message = "Moved to In Progress";
       }
     }
 
-    // ✅ PRIORITY CHANGE
     if (req.body.priority && req.body.priority !== oldTask.priority) {
-      type = "updated";
       message = `Priority changed to ${req.body.priority}`;
     }
 
@@ -90,6 +123,27 @@ router.patch("/:id", async (req, res) => {
 
     res.json(updatedTask);
   } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * DELETE TASK
+ */
+router.delete("/:id", auth, async (req, res) => {
+  try {
+    const deleted = await Task.findOneAndDelete({
+      _id: req.params.id,
+      userId: req.userId,
+    });
+
+    if (!deleted) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
+    res.json({ message: "Task deleted" });
+  } catch (err) {
+    console.error("DELETE TASK ERROR:", err);
     res.status(500).json({ error: err.message });
   }
 });
