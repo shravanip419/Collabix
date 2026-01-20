@@ -2,10 +2,18 @@ import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
   {
+    // AUTH (unchanged)
     name: { type: String, required: true },
-     username: { type: String, required: true, unique: true },
+    username: { type: String, required: true, unique: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
+
+    // PROFILE (new, optional)
+    jobTitle: { type: String, default: "" },
+    department: { type: String, default: "" },
+    organization: { type: String, default: "" },
+    location: { type: String, default: "" },
+    avatar: { type: String, default: "" },
   },
   { timestamps: true }
 );

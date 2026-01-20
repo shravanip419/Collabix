@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./Profile.css";
 import {
   MdWork,
@@ -8,28 +8,49 @@ import {
   MdEmail
 } from "react-icons/md";
 import JiraLogo from "../Logo/Jira.png";
-
+import api from "../api/axios";
 
 export default function Profile() {
   const [expanded, setExpanded] = useState(false);
+  const [user, setUser] = useState(null);
+  const [tasks, setTasks] = useState([]);
+  const [editMode, setEditMode] = useState(false);
+  const [formData, setFormData] = useState({});
 
-  const baseTasks = [
-    "Finalize Documentation for the Project",
-    "Optimize Performance of the Application",
-    "Develop Transaction History Feature",
-    "Create Wallet Integration",
-    "Set Up Notifications for Users"
-  ];
+  // 🔥 Fetch profile
+  useEffect(() => {
+    const fetchProfile = async () => {
+      const res = await api.get("/users/me");
+      setUser(res.data.user);
+      setTasks(res.data.tasks || []);
+      setFormData(res.data.user); // preload form
+    };
+    fetchProfile();
+  }, []);
 
-  const extraTasks = [
-    "Implement User Authentication",
-    "Subtask 2.1",
-    "Post-Launch Review and Feedback Collection",
-    "Prepare for Project Launch",
-    "Conduct User Testing for the Platform"
-  ];
+  const handleChange = e => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
-  const tasksToShow = expanded ? [...baseTasks, ...extraTasks] : baseTasks;
+  const saveProfile = async () => {
+    try {
+      const res = await api.put("/users/me", {
+        jobTitle: formData.jobTitle,
+        department: formData.department,
+        organization: formData.organization,
+        location: formData.location
+      });
+
+      setUser(res.data); // update UI
+      setEditMode(false);
+    } catch (err) {
+      console.error("Update failed", err);
+    }
+  };
+
+  if (!user) return <p style={{ padding: "30px" }}>Loading profile...</p>;
+
+  const tasksToShow = expanded ? tasks : tasks.slice(0, 5);
 
   return (
     <div className="profile-root">
@@ -43,32 +64,83 @@ export default function Profile() {
       <div className="profile-content">
         {/* LEFT */}
         <div className="profile-left">
-          {/* AVATAR */}
           <div className="avatar-wrapper">
             <div className="avatar">
-              KD
-              <span className="avatar-overlay">Change</span>
+              {user.name.charAt(0).toUpperCase()}
             </div>
           </div>
 
-          <h2 className="profile-name">Kaustubh Deshmane</h2>
-          <button className="manage-account">Manage your account</button>
+          <h2 className="profile-name">{user.name}</h2>
+
+          <button
+            className="manage-account"
+            onClick={() => setEditMode(!editMode)}
+          >
+            {editMode ? "Cancel" : "Manage your account"}
+          </button>
 
           {/* ABOUT */}
           <div className="profile-card">
             <h3>About</h3>
 
+            {/* JOB */}
             <div className="about-item">
-              <MdWork /> <span>Your job title</span>
+              <MdWork />
+              {editMode ? (
+                <input
+                  name="jobTitle"
+                  value={formData.jobTitle || ""}
+                  onChange={handleChange}
+                  placeholder="Job title"
+                />
+              ) : (
+                <span>{user.jobTitle || "Add job title"}</span>
+              )}
             </div>
+
+            {/* DEPARTMENT */}
             <div className="about-item">
-              <MdApartment /> <span>Your department</span>
+              <MdApartment />
+              {editMode ? (
+                <input
+                  name="department"
+                  value={formData.department || ""}
+                  onChange={handleChange}
+                  placeholder="Department"
+                />
+              ) : (
+                <span>{user.department || "Add department"}</span>
+              )}
             </div>
+
+            {/* ORG */}
             <div className="about-item">
-              <MdBusiness /> <span>Your organization</span>
+              <MdBusiness />
+              {editMode ? (
+                <input
+                  name="organization"
+                  value={formData.organization || ""}
+                  onChange={handleChange}
+                  placeholder="Organization"
+                />
+              ) : (
+                <span>{user.organization || "Add organization"}</span>
+              )}
             </div>
+
+            {/* LOCATION */}
             <div className="about-item">
-              <MdLocationOn /> <span>Your location</span>
+              <MdLocationOn />
+              {editMode ? (
+                <input
+                  name="location"
+                  value={formData.location || ""}
+                  onChange={handleChange}
+                  placeholder="Location"
+                />
+              ) : (
+                <span>{user.location || "Add location"}</span>
+              )}
             </div>
 
             <div className="divider" />
@@ -76,69 +148,60 @@ export default function Profile() {
             {/* CONTACT */}
             <h4 className="sub-title">Contact</h4>
             <div className="about-item">
-              <MdEmail /> <span>kaustubhdexhmane123@gmail.com</span>
+              <MdEmail /> <span>{user.email}</span>
             </div>
 
-            <div className="divider" />
-
-            {/* TEAMS */}
-            <h4 className="sub-title">Teams</h4>
-            <div className="team-box">
-              <span className="plus">+</span>
-              <span>Create a team</span>
-            </div>
-
-            <a className="privacy-link">View privacy policy</a>
+            {editMode && (
+              <button
+                className="manage-account"
+                style={{ marginTop: "12px" }}
+                onClick={saveProfile}
+              >
+                Save changes
+              </button>
+            )}
           </div>
         </div>
 
         {/* RIGHT */}
         <div className="profile-right">
-          {/* WORKED ON */}
           <div className="worked-on-box">
             <div className="worked-header">
               <h3>Worked on</h3>
-              <span className="view-all">View all</span>
             </div>
-
-            <p className="worked-subtext">
-              Others will only see what they can access.
-            </p>
 
             <div className="worked-list">
-              {tasksToShow.map((task, i) => (
-                <div key={i} className="worked-item">
-                  <span className="check">✓</span>
-                  <div>
-                    <p>{task}</p>
-                    <span className="worked-meta">
-                      (Example) Billing System Dev · You created this on January 2, 2026
-                    </span>
+              {tasksToShow.length === 0 ? (
+                <p style={{ fontSize: "14px", color: "#6b778c" }}>
+                  No tasks yet.
+                </p>
+              ) : (
+                tasksToShow.map(task => (
+                  <div key={task._id} className="worked-item">
+                    <span className="check">✓</span>
+                    <div>
+                      <p>{task.title}</p>
+                      <span className="worked-meta">
+                        {new Date(task.createdAt).toDateString()}
+                      </span>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
 
-            <button
-              className="show-more-btn"
-              onClick={() => setExpanded(!expanded)}
-            >
-              {expanded ? "Show less" : "Show more"}
-            </button>
+            {tasks.length > 5 && (
+              <button
+                className="show-more-btn"
+                onClick={() => setExpanded(!expanded)}
+              >
+                {expanded ? "Show less" : "Show more"}
+              </button>
+            )}
           </div>
 
-          {/* PLACES */}
           <div className="profile-card places">
             <h3>Places you work in</h3>
-
-            <div className="jira-place">
-              <div className="jira-row">
-                <img src={JiraLogo} alt="Jira" className="jira-icon" />
-                <span className="jira-title">JIRA</span>
-              </div>
-              <p className="jira-project">Billing System Dev</p>
-            </div>
-
             <div className="jira-place">
               <div className="jira-row">
                 <img src={JiraLogo} alt="Jira" className="jira-icon" />
