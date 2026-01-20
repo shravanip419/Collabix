@@ -11,6 +11,7 @@ import Activity from "./pages/Activity";
 import Setting from "./pages/Setting";
 import Profile from "./pages/Profile";
 import Projects from "./pages/Projects";
+import UpdatePassword from "./pages/UpdatePassword";
 
 import "./App.css";
 
@@ -27,15 +28,22 @@ function App() {
 
         <div className={isAuthPage ? "" : "page-content"}>
           <Routes>
+            {/* AUTH / LANDING */}
             <Route path="/" element={<Hero />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
+
+            {/* MAIN APP */}
             <Route path="/home" element={<Home />} />
-            <Route path="/board" element={<Projects/>}/>
+            <Route path="/board" element={<Projects />} />
             <Route path="/board/:projectId" element={<Board />} />
             <Route path="/activity" element={<Activity />} />
-            <Route path="/settings" element={<Setting />} />
-            <Route path="/settings/profile" element={<Profile />} />
+
+            {/* SETTINGS (NESTED ROUTES) */}
+            <Route path="/settings" element={<Setting title="Settings" subtitle="Manage your account" />}>
+              <Route path="profile" element={<Profile />} />
+              <Route path="security/update-password" element={<UpdatePassword />} />
+            </Route>
           </Routes>
         </div>
       </main>
