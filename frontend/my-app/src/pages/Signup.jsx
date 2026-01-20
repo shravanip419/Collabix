@@ -13,7 +13,7 @@ export default function Signup() {
   const [focusField, setFocusField] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
 
-  // 🌸 FORM STATE (THIS WAS MISSING)
+  
   const [formData, setFormData] = useState({
     fullName: "",
     username: "",
@@ -21,7 +21,7 @@ export default function Signup() {
     password: "",
   });
 
-  /* 👀 Cursor tracking */
+ 
   useEffect(() => {
     const handleMouseMove = (e) => {
       if (focusField) return;
