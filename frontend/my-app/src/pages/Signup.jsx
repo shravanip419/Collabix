@@ -9,19 +9,22 @@ export default function Signup() {
   const pupilsRef = useRef([]);
   const shapesRef = useRef([]);
   const { login } = useAuth();
-
+  const [step, setStep] = useState(1);
   const [focusField, setFocusField] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
 
-  
   const [formData, setFormData] = useState({
     fullName: "",
     username: "",
     email: "",
     password: "",
+    jobTitle: "",
+    department: "",
+    organization: "",
+    location: "",
+    avatar: "",
   });
 
- 
   useEffect(() => {
     const handleMouseMove = (e) => {
       if (focusField) return;
@@ -67,23 +70,23 @@ export default function Signup() {
     if (!focusField && !showPassword) lockEyes(0);
   }, [focusField, showPassword]);
 
+  const nextStep = (e) =>{
+    e.preventDefault();
+    setStep(2);
+  }
+
   /* Submit */
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const { data } = await api.post("/auth/signup", {
-        fullName: formData.fullName,
-        username: formData.username,
-        email: formData.email,
-        password: formData.password,
-      });
-      
+      const { data } = await api.post("/auth/signup", formData);
       if (data.token) {
         localStorage.setItem("token", data.token);
       }
 
       login(data);
+      // setStep(2);
       navigate("/home");
     } catch (err) {
       alert(err.response?.data?.message || "Signup failed");
@@ -132,79 +135,134 @@ export default function Signup() {
           <h2>Create an account</h2>
           <p className="subtitle">Get started with ToggleNest</p>
 
-          <form onSubmit={handleSubmit}>
-            <label>Full Name</label>
-            <input
-              type="text"
-              placeholder="Your name"
-              value={formData.fullName}
-              onChange={(e) =>
-                setFormData({ ...formData, fullName: e.target.value })
-              }
-              onFocus={() => setFocusField("text")}
-              onBlur={() => setFocusField(null)}
-              required
-            />
+          <form onSubmit={step === 1 ? nextStep : handleSubmit}>
+            {step === 1 && (
+              <>
+                <label>Full Name</label>
+                <input
+                  type="text"
+                  placeholder="Your name"
+                  value={formData.fullName}
+                  onChange={(e) =>
+                    setFormData({ ...formData, fullName: e.target.value })
+                  }
+                  required
+                />
 
-            <label>Username</label>
-            <input
-              type="text"
-              placeholder="Username"
-              value={formData.username}
-              onChange={(e) =>
-                setFormData({ ...formData, username: e.target.value })
-              }
-              onFocus={() => setFocusField("text")}
-              onBlur={() => setFocusField(null)}
-              required
-            />
+                <label>Username</label>
+                <input
+                  type="text"
+                  placeholder="Username"
+                  value={formData.username}
+                  onChange={(e) =>
+                    setFormData({ ...formData, username: e.target.value })
+                  }
+                  required
+                />
 
-            <label>Email</label>
-            <input
-              type="email"
-              placeholder="you@example.com"
-              value={formData.email}
-              onChange={(e) =>
-                setFormData({ ...formData, email: e.target.value })
-              }
-              onFocus={() => setFocusField("text")}
-              onBlur={() => setFocusField(null)}
-              required
-            />
+                <label>Email</label>
+                <input
+                  type="email"
+                  placeholder="you@example.com"
+                  value={formData.email}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
+                  required
+                />
 
-            <label>Password</label>
-            <div style={{ position: "relative" }}>
-              <input
-                type={showPassword ? "text" : "password"}
-                placeholder="••••••••"
-                value={formData.password}
-                onChange={(e) =>
-                  setFormData({ ...formData, password: e.target.value })
-                }
-                onFocus={() => setFocusField("password")}
-                onBlur={() => setFocusField(null)}
-                required
-              />
+                <label>Password</label>
+                <div style={{ position: "relative" }}>
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="••••••••"
+                    value={formData.password}
+                    onChange={(e) =>
+                      setFormData({ ...formData, password: e.target.value })
+                    }
+                    onFocus={() => setFocusField("password")}
+                    onBlur={() => setFocusField(null)}
+                    required
+                  />
 
-              <span
-                onClick={() => {
-                  setShowPassword(!showPassword);
-                  lockEyes(-6);
-                }}
-                style={{
-                  position: "absolute",
-                  right: "6px",
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  cursor: "pointer",
-                }}
-              >
-                {showPassword ? "🙈" : "👁️"}
-              </span>
-            </div>
+                  <span
+                    onClick={() => {
+                      setShowPassword(!showPassword);
+                      lockEyes(-6);
+                    }}
+                    style={{
+                      position: "absolute",
+                      right: "6px",
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                    }}
+                  >
+                    {showPassword ? (
+                      /* Monkey 🙈 */
+                      <span style={{ fontSize: "18px" }}>🙈</span>
+                    ) : (
+                      /* Eye 👁️ */
+                      <span style={{ fontSize: "18px" }}>👁️</span>
+                    )}
+                  </span>
+                </div>
 
-            <button className="login-btn">Create Account</button>
+                <button className="login-btn">
+                  Next →
+                </button>
+              </>
+            )}
 
+            {step === 2 && (
+              <>
+                <label>Job Title</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Software Engineer"
+                  value={formData.jobTitle}
+                  onChange={(e) =>
+                    setFormData({ ...formData, jobTitle: e.target.value })
+                  }
+                />
+
+                <label>Department</label>
+                <input
+                  type="text"
+                  placeholder="Engineering / Design"
+                  value={formData.department}
+                  onChange={(e) =>
+                    setFormData({ ...formData, department: e.target.value })
+                  }
+                />
+
+                <label>Organization</label>
+                <input
+                  type="text"
+                  placeholder="Company / College"
+                  value={formData.organization}
+                  onChange={(e) =>
+                    setFormData({ ...formData, organization: e.target.value })
+                  }
+                />
+
+                <label>Location</label>
+                <input
+                  type="text"
+                  placeholder="City, Country"
+                  value={formData.location}
+                  onChange={(e) =>
+                    setFormData({ ...formData, location: e.target.value })
+                  }
+                />
+
+                <button className="login-btn">
+                  Create Account
+                </button>
+              </>
+            )}
             <p className="signup-link">
               Already have an account?
               <span onClick={() => navigate("/login")}> Sign in</span>

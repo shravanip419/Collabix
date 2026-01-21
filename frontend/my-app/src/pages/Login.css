@@ -6,10 +6,13 @@
   justify-content: center;
   background: linear-gradient(135deg, #f5f6fa, #e9ebf0);
   font-family: system-ui, sans-serif;
+  overflow-y: auto !important;
 }
 
 /* CARD */
 .login-container {
+  min-height: 100vh;
+  height: auto !important;
   display: flex;
   width: 900px;
   background: #fff;
@@ -262,6 +265,7 @@ input {
 .form-section {
   position: relative;
   z-index: 10;
+  overflow: visible !important; 
 }
 
 .login-btn {

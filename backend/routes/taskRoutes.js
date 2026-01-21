@@ -5,6 +5,34 @@ import auth from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
+// DASHBOARD STATS (all tasks of logged-in user)
+router.get("/dashboard", auth, async (req, res) => {
+  try {
+    const tasks = await Task.find({ userId: req.user.id });
+    res.json(tasks);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// GET all tasks for logged-in user (dashboard)
+router.get("/dashboard/all", auth, async (req, res) => {
+  try {
+    const tasks = await Task.find()
+      .populate({
+        path: "projectId",
+        match: { userId: req.userId },
+      });
+
+    // remove tasks from other users' projects
+    const filtered = tasks.filter(t => t.projectId !== null);
+
+    res.json(filtered);
+  } catch (err) {
+    res.status(500).json({ message: "Dashboard task fetch failed" });
+  }
+});
+
 /**
  * GET TASKS BY PROJECT
  */

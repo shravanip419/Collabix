@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.post("/signup", async (req, res) => {
   try {
-    const { fullName, username, email, password } = req.body;
+    const { fullName, username, email, password, jobTitle, department, organization, location } = req.body;
 
     if (!fullName || !username || !email || !password) {
       return res.status(400).json({ message: "All fields required" });
@@ -25,9 +25,12 @@ router.post("/signup", async (req, res) => {
       username,
       email,
       password: hashedPassword,
+      jobTitle: jobTitle || "Employee",
+      department: department || "",
+      organization: organization || "", 
+      location: location || "",
     });
 
-    // 🔥 THE FIX: Generate a token so she is logged in immediately!
     const token = jwt.sign(
       { id: newUser._id },
       process.env.JWT_SECRET,
@@ -37,7 +40,7 @@ router.post("/signup", async (req, res) => {
     res.status(201).json({ 
       message: "Signup successful",
       token, // Send this back
-      user: { id: newUser._id, name: newUser.name, email: newUser.email } 
+      user: { id: newUser._id, name: newUser.name, email: newUser.email, username: newUser.username }, 
     });
   } catch (err) {
     console.error("Signup DB Error:", err);

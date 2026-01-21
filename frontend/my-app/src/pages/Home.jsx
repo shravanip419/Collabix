@@ -1,63 +1,67 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "./Home.css";
+import { Link } from "react-router-dom";
+import api from "../api/axios";
 
 const Home = () => {
   const [activities, setActivities] = useState([]);
-  const [projects, setProjects] = useState([]);
+  const [stats, setStats] = useState({
+    totalProjects: 0,
+    completed: 0,
+    pending: 0,
+    productivity: 0,
+  });
 
- useEffect(() => {
-  const token = localStorage.getItem("token");
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const [projectsRes, tasksRes, activityRes] = await Promise.all([
+          api.get("/projects"),
+          api.get("/tasks/dashboard/all"),
+          api.get("/activities/recent?limit=5"),
+        ]);
 
-  if (!token) {
-    console.error("❌ No token found");
-    return;
-  }
+        const projects = projectsRes.data;
+        const tasks = tasksRes.data;
+        const activities = activityRes.data;
 
-  // Fetch projects
-  fetch("http://localhost:5000/api/projects", {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  })
-    .then(res => {
-      if (!res.ok) throw new Error("Unauthorized");
-      return res.json();
-    })
-    .then(data => {
-      setProjects(Array.isArray(data) ? data : []);
-    })
-    .catch(err => {
-      console.error("Projects error:", err);
-      setProjects([]); // 👈 prevent crash
-    });
+        const completedTasks = tasks.filter(t => t.status === "done");
+        const pendingTasks = tasks.filter(t => t.status !== "done");
 
-  // Fetch activities
-  fetch("http://localhost:5000/api/activities/recent?limit=5", {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  })
-    .then(res => res.json())
-    .then(data => setActivities(Array.isArray(data) ? data : []))
-    .catch(() => setActivities([]));
-}, []);
+        const productivity =
+          tasks.length === 0
+            ? 0
+            : Math.round((completedTasks.length / tasks.length) * 100);
 
+        setStats({
+          totalProjects: projects.length,
+          completed: completedTasks.length,
+          pending: pendingTasks.length,
+          productivity,
+        });
+
+        setActivities(activities);
+      } catch (err) {
+        console.error("Dashboard fetch failed", err);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
 
   const getActivityText = (activity) => {
     const name = activity.user?.name || "Someone";
-    const task = activity.taskTitle || "a task";
+    if (activity.type === "created")
+      return `${name} created ${activity.taskTitle}`;
 
-    switch (activity.type) {
-      case "created":
-        return `${name} created ${task}`;
-      case "completed":
-        return `${name} completed ${task}`;
-      case "assigned":
-        return `${name} assigned ${task}`;
-      default:
-        return `${name} updated ${task}`;
-    }
+    if (activity.type === "completed")
+      return `${name} completed ${activity.taskTitle}`;
+
+    if (activity.type === "assigned")
+      return `${name} assigned ${activity.taskTitle}`;
+
+    return `${name} updated ${activity.taskTitle}`;
   };
 
   return (
@@ -69,9 +73,35 @@ const Home = () => {
           <div className="stat-card stat-purple">
             <div className="stat-info">
               <h4>Total Projects</h4>
-              <h1>{projects.length}</h1>
+              <h1>{stats.totalProjects}</h1>
             </div>
             <div className="stat-icon">📁</div>
+          </div>
+
+          <div className="stat-card stat-green">
+            <div className="stat-info">
+              <h4>Tasks Completed</h4>
+              <h1>{stats.completed}</h1>
+              <span>↑ productivity based</span>
+            </div>
+            <div className="stat-icon">✅</div>
+          </div>
+
+          <div className="stat-card stat-yellow">
+            <div className="stat-info">
+              <h4>Tasks Pending</h4>
+              <h1>{stats.pending}</h1>
+            </div>
+            <div className="stat-icon">⏳</div>
+          </div>
+
+          <div className="stat-card stat-blue">
+            <div className="stat-info">
+              <h4>Team Productivity</h4>
+              <h1>{stats.productivity}%</h1>
+              <span>Based on completed tasks</span>
+            </div>
+            <div className="stat-icon">📈</div>
           </div>
         </section>
 
@@ -82,7 +112,7 @@ const Home = () => {
           <div className="panel">
             <div className="panel-header">
               <h3>Your Projects</h3>
-              <Link to="/projects">View all</Link>
+              <Link to="/board" className="view-all">View all</Link>
             </div>
 
             {projects.slice(0, 3).map(project => (
@@ -97,7 +127,7 @@ const Home = () => {
           <div className="panel">
             <div className="panel-header">
               <h3>Recent Activity</h3>
-              <Link to="/activity">View all</Link>
+              <Link to="/activity" className="view-all">View all</Link>
             </div>
 
             {activities.length === 0 && (
