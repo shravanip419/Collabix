@@ -32,44 +32,25 @@ router.get("/", auth, async (req, res) => {
  */
 router.post("/", auth, async (req, res) => {
   try {
-    const { title, status, priority, dueDate, description, projectId } =
-      req.body;
-
-    if (!title || !projectId) {
-      return res
-        .status(400)
-        .json({ message: "title and projectId are required" });
-    }
-
     const task = await Task.create({
-      title,
-      status,
-      priority,
-      dueDate,
-      description,
-      projectId,
-      userId: req.userId,
-    });
+      title: req.body.title,
+      status: req.body.status,
+      priority: req.body.priority,
+      description: req.body.description,
+      dueDate: req.body.dueDate,
+      assignee: req.body.assignee,
 
-    const user = req.body.user || { name: "Unknown User" };
-
-    await Activity.create({
-      type: "created",
-      message: "Task created",
-      taskTitle: task.title,
-      projectId: task.projectId,
-      taskId: task._id,
-      user: {
-        name: user.name,
-        avatar: "https://i.pravatar.cc/150",
-      },
+      project: req.body.projectId, // frontend can still send projectId
+      user: req.user.id,            // from auth middleware
     });
 
     res.status(201).json(task);
   } catch (err) {
+    console.error("TASK CREATE ERROR:", err.message);
     res.status(500).json({ error: err.message });
   }
 });
+
 
 /**
  * UPDATE TASK

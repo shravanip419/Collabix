@@ -1,6 +1,6 @@
 import express from "express";
 import Project from "../models/Project.js";
-import Task from "../models/Task.js"; //
+import Task from "../models/Task.js";
 import auth from "../middleware/authMiddleware.js";
 import mongoose from "mongoose";
 
@@ -11,20 +11,20 @@ router.get("/", auth, async (req, res) => {
   try {
     const projectsWithStats = await Project.aggregate([
       {
-        // 1. Only get projects belonging to this user
-        $match: { userId: new mongoose.Types.ObjectId(req.userId) } 
+        // ✅ FIX 1: use req.user.id
+        // ✅ FIX 2: match correct field name
+        $match: { user: new mongoose.Types.ObjectId(req.user.id) }
       },
       {
-        // 2. Look up tasks for each project
-        $lookup: {
-          from: "tasks",
-          localField: "_id",
-          foreignField: "projectId",
-          as: "projectTasks"
-        }
+       $lookup: {
+        from: "tasks",
+        localField: "_id",
+        foreignField: "project", // 🔥 MUST MATCH
+        as: "projectTasks"
+           }
+
       },
       {
-        // 3. Add fields for total and completed counts
         $addFields: {
           totalTasks: { $size: "$projectTasks" },
           completedTasks: {
@@ -39,7 +39,6 @@ router.get("/", auth, async (req, res) => {
         }
       },
       {
-        // 4. Remove the raw tasks array to keep the response light
         $project: { projectTasks: 0 }
       }
     ]);
@@ -53,11 +52,12 @@ router.get("/", auth, async (req, res) => {
 // ADD PROJECT
 router.post("/", auth, async (req, res) => {
   try {
-    const project = await Project.create({ 
+    const project = await Project.create({
       name: req.body.name,
-      userId: req.userId 
+      // ✅ FIX 3: save correct user field
+      user: req.user.id
     });
-    // console.log("Project created in DB:", project); Log on server side too
+
     res.status(201).json(project);
   } catch (err) {
     console.error("DB Create Error:", err.message);

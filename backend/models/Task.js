@@ -19,27 +19,19 @@ const taskSchema = new mongoose.Schema(
       default: "medium",
     },
 
-    dueDate: {
-      type: String,
-    },
+    dueDate: String,
+    assignee: String,
+    description: String,
 
-    assignee: {
-      type: String,
-    },
-
-    description: {
-      type: String,
-    },
-
-    // 🔑 PROJECT OWNERSHIP
-    projectId: {
+    // 🔑 PROJECT OWNERSHIP (NEW)
+    project: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Project",
       required: true,
     },
 
-    // 🔐 USER OWNERSHIP
-    userId: {
+    // 🔐 USER OWNERSHIP (NEW)
+    user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
