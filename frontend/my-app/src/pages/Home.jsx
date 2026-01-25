@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "./Home.css";
-import { Link } from "react-router-dom";
 import api from "../api/axios";
 
 const Home = () => {
   const [activities, setActivities] = useState([]);
+  const [projects, setProjects] = useState([]); // ✅ added
   const [stats, setStats] = useState({
     totalProjects: 0,
     completed: 0,
@@ -18,13 +18,14 @@ const Home = () => {
       try {
         const [projectsRes, tasksRes, activityRes] = await Promise.all([
           api.get("/projects"),
-          api.get("/tasks/dashboard/all"),
-          api.get("/activities/recent?limit=5"),
+          api.get("/tasks"),
+          api.get("/activities"),
         ]);
 
-        const projects = projectsRes.data;
+
+        const projectsData = projectsRes.data;
         const tasks = tasksRes.data;
-        const activities = activityRes.data;
+        const activitiesData = activityRes.data.slice(0, 5);
 
         const completedTasks = tasks.filter(t => t.status === "done");
         const pendingTasks = tasks.filter(t => t.status !== "done");
@@ -34,14 +35,16 @@ const Home = () => {
             ? 0
             : Math.round((completedTasks.length / tasks.length) * 100);
 
+        setProjects(projectsData); // ✅ added
+
         setStats({
-          totalProjects: projects.length,
+          totalProjects: projectsData.length,
           completed: completedTasks.length,
           pending: pendingTasks.length,
           productivity,
         });
 
-        setActivities(activities);
+        setActivities(activitiesData);
       } catch (err) {
         console.error("Dashboard fetch failed", err);
       }
@@ -52,6 +55,7 @@ const Home = () => {
 
   const getActivityText = (activity) => {
     const name = activity.user?.name || "Someone";
+
     if (activity.type === "created")
       return `${name} created ${activity.taskTitle}`;
 

@@ -5,31 +5,15 @@ import auth from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-// DASHBOARD STATS (all tasks of logged-in user)
+/**
+ * GET ALL TASKS FOR DASHBOARD (ALL USER TASKS)
+ */
 router.get("/dashboard", auth, async (req, res) => {
   try {
-    const tasks = await Task.find({ userId: req.user.id });
+    const tasks = await Task.find({ userId: req.userId });
     res.json(tasks);
   } catch (err) {
     res.status(500).json({ message: err.message });
-  }
-});
-
-// GET all tasks for logged-in user (dashboard)
-router.get("/dashboard/all", auth, async (req, res) => {
-  try {
-    const tasks = await Task.find()
-      .populate({
-        path: "projectId",
-        match: { userId: req.userId },
-      });
-
-    // remove tasks from other users' projects
-    const filtered = tasks.filter(t => t.projectId !== null);
-
-    res.json(filtered);
-  } catch (err) {
-    res.status(500).json({ message: "Dashboard task fetch failed" });
   }
 });
 
@@ -62,14 +46,14 @@ router.post("/", auth, async (req, res) => {
   try {
     const task = await Task.create({
       title: req.body.title,
-      status: req.body.status,
-      priority: req.body.priority,
+      status: req.body.status || "todo",
+      priority: req.body.priority || "medium",
       description: req.body.description,
       dueDate: req.body.dueDate,
       assignee: req.body.assignee,
 
-      project: req.body.projectId, // frontend can still send projectId
-      user: req.user.id,            // from auth middleware
+      projectId: req.body.projectId, // ✅ FIXED
+      userId: req.userId,            // ✅ FIXED
     });
 
     res.status(201).json(task);
@@ -78,7 +62,6 @@ router.post("/", auth, async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-
 
 /**
  * UPDATE TASK
@@ -99,8 +82,6 @@ router.patch("/:id", auth, async (req, res) => {
       req.body,
       { new: true }
     );
-
-    const user = req.body.user || { name: "Unknown User" };
 
     let type = "updated";
     let message = "Task updated";
@@ -125,7 +106,7 @@ router.patch("/:id", auth, async (req, res) => {
       projectId: updatedTask.projectId,
       taskId: updatedTask._id,
       user: {
-        name: user.name,
+        name: req.user.name,
         avatar: "https://i.pravatar.cc/150",
       },
     });
@@ -152,7 +133,6 @@ router.delete("/:id", auth, async (req, res) => {
 
     res.json({ message: "Task deleted" });
   } catch (err) {
-    console.error("DELETE TASK ERROR:", err);
     res.status(500).json({ error: err.message });
   }
 });
