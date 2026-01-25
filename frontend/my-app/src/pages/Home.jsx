@@ -13,46 +13,51 @@ const Home = () => {
     productivity: 0,
   });
 
-  useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        const [projectsRes, tasksRes, activityRes] = await Promise.all([
-          api.get("/projects"),
-          api.get("/tasks"),
-          api.get("/activities"),
-        ]);
+useEffect(() => {
+  const fetchDashboardData = async () => {
+    try {
+      const [projectsRes, tasksRes, activityRes] = await Promise.all([
+        api.get("/projects"),
+        api.get("/tasks/dashboard"),   // ✅ FIXED
+        api.get("/activities"),
+      ]);
 
-        const projectsData = projectsRes.data;
-        const tasks = tasksRes.data;
-        const activitiesData = activityRes.data;
+      const projectsData = projectsRes.data || [];
+      const tasks = tasksRes.data || [];
+      const activitiesData = activityRes.data || [];
 
-        setProjects(projectsData);
+      setProjects(projectsData);
 
-        const completedTasks = tasks.filter(t => t.status === "done");
-        const pendingTasks = tasks.filter(t => t.status !== "done");
+      const completedTasks = tasks.filter(
+        t => t.status?.toLowerCase() === "done"
+      );
 
-        const productivity =
-          tasks.length === 0
-            ? 0
-            : Math.round((completedTasks.length / tasks.length) * 100);
+      const pendingTasks = tasks.filter(
+        t => t.status?.toLowerCase() !== "done"
+      );
 
-        setProjects(projectsData); // ✅ added
+      const productivity =
+        tasks.length === 0
+          ? 0
+          : Math.round((completedTasks.length / tasks.length) * 100);
 
-        setStats({
-          totalProjects: projectsData.length,
-          completed: completedTasks.length,
-          pending: pendingTasks.length,
-          productivity,
-        });
+      setStats({
+        totalProjects: projectsData.length,
+        completed: completedTasks.length,
+        pending: pendingTasks.length,
+        productivity,
+      });
 
-        setActivities(activitiesData);
-      } catch (err) {
-        console.error("Dashboard fetch failed", err);
-      }
-    };
+      setActivities(activitiesData.slice(0, 5)); // limit to 5
 
-    fetchDashboardData();
-  }, []);
+    } catch (err) {
+      console.error("Dashboard fetch failed", err.response?.data || err.message);
+    }
+  };
+
+  fetchDashboardData();
+}, []);
+
 
   const getActivityText = (activity) => {
     const name = activity.user?.name || "Someone";
