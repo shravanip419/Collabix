@@ -55,6 +55,7 @@
 .btn.primary {
   background: linear-gradient(135deg, #6366f1, #7c3aed);
   color: white;
+  margin-right: 12px;
 }
 
 .btn.outline {
@@ -281,6 +282,7 @@
   color: white;
   border: none;
   padding: 14px 28px;
+  margin-top: 15px;
 }
 
 .btn.outline {

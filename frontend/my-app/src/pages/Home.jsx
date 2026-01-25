@@ -4,8 +4,8 @@ import "./Home.css";
 import api from "../api/axios";
 
 const Home = () => {
+  const [projects, setProjects] = useState([]);
   const [activities, setActivities] = useState([]);
-  const [projects, setProjects] = useState([]); // ✅ added
   const [stats, setStats] = useState({
     totalProjects: 0,
     completed: 0,
@@ -22,10 +22,11 @@ const Home = () => {
           api.get("/activities"),
         ]);
 
-
         const projectsData = projectsRes.data;
         const tasks = tasksRes.data;
-        const activitiesData = activityRes.data.slice(0, 5);
+        const activitiesData = activityRes.data;
+
+        setProjects(projectsData);
 
         const completedTasks = tasks.filter(t => t.status === "done");
         const pendingTasks = tasks.filter(t => t.status !== "done");
@@ -72,8 +73,8 @@ const Home = () => {
     <div className="home">
       <div className="dashboard">
 
-        {/* STATS */}
         <section className="stats">
+
           <div className="stat-card stat-purple">
             <div className="stat-info">
               <h4>Total Projects</h4>
@@ -107,19 +108,18 @@ const Home = () => {
             </div>
             <div className="stat-icon">📈</div>
           </div>
+
         </section>
 
-        {/* GRID */}
         <section className="grid">
 
-          {/* YOUR PROJECTS */}
           <div className="panel">
             <div className="panel-header">
               <h3>Your Projects</h3>
               <Link to="/board" className="view-all">View all</Link>
             </div>
 
-            {projects.slice(0, 3).map(project => (
+            {projects && projects.slice(0, 3).map(project => (
               <div key={project._id} className="project-item">
                 <strong>{project.name}</strong>
                 <p>{project.description || "No description"}</p>
@@ -127,7 +127,6 @@ const Home = () => {
             ))}
           </div>
 
-          {/* RECENT ACTIVITY */}
           <div className="panel">
             <div className="panel-header">
               <h3>Recent Activity</h3>
@@ -138,17 +137,36 @@ const Home = () => {
               <p style={{ color: "#888" }}>No recent activity</p>
             )}
 
-            {activities.map(activity => (
-              <div key={activity._id} className="activity">
-                <strong>{getActivityText(activity)}</strong>
-                <div className="activity-meta">
-                  {activity.projectName || "General"}
-                </div>
-              </div>
-            ))}
+           {activities.map(activity => (
+  <div key={activity._id} className="activity-item">
+
+    <img
+      src={activity.user?.avatar || "https://i.pravatar.cc/100"}
+      alt="user"
+      className="activity-avatar"
+    />
+
+    <div className="activity-content">
+
+      <p className="activity-text">
+        <strong>{getActivityText(activity)}</strong>
+      </p>
+
+      <span className="activity-project">
+        {activity.projectName || "General"}
+      </span>
+
+    </div>
+
+  </div>
+))}
+
+
+
           </div>
 
         </section>
+
       </div>
     </div>
   );

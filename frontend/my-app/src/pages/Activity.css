@@ -1,109 +1,194 @@
-/* Activity.css - Full Integrated File */
-.activity-layout {
-  display: flex;
+.activity-page {
+  padding: 30px 40px;
+  background: #f7f9fc;
   min-height: 100vh;
+  font-family: "Segoe UI", sans-serif;
 }
 
-.main-section {
-  flex: 1;
+/* HEADER */
+
+.activity-header {
   display: flex;
-  flex-direction: column;
-  position: relative;
-  /* Removed fixed margin-left: 285px to integrate with global Sidebar */
-  transition: margin-left 0.25s ease;
-  background: #f9fafb;
-}
-
-.sidebar.collapsed + .main-section {
-  margin-left: 0; /* Handled by flexbox now */
-}
-
-.activities {
-  display: flex;
-  flex-direction: column;
-  padding: 24px 32px;
-  position: relative;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
+  margin-bottom: 30px;
 }
 
-.activity-card {
+.activity-header h2 {
+  font-size: 26px;
+  font-weight: 600;
+  color: #222;
+}
+
+.project-filter {
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: white;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* TIMELINE */
+
+.activity-timeline {
+  position: relative;
+  padding-left: 70px;
+}
+
+/* CENTER LINE */
+
+.activity-timeline::before {
+  content: "";
+  position: absolute;
+  left: 88px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: #e1e5ee;
+}
+
+/* ITEM */
+
+.activity-item {
+  position: relative;
   display: flex;
-  align-items: flex-start;
-  margin-bottom: 28px;
-  width: 100%;
-  max-width: 850px;
-  justify-content: center;
-  height: auto;
+  margin-bottom: 32px;
 }
 
-.activity-type {
-  width: 36px;
-  height: 36px;
+/* ICON */
+
+.activity-icon {
+  position: absolute;
+  left: 0px;
+  width: 38px;
+  height: 38px;
+  background: #fff;
+  border: 2px solid #4f46e5;
   border-radius: 50%;
-  background: #eef2ff;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 16px;
-  margin-left: 26px;
-  margin-right: 18px;
-  z-index: 2;
-  font-weight: 400;
-  color: #6366f1; /* Brand Indigo */
+  
 }
 
-.activity-details {
-  background: #ffffff;
-  border-radius: 12px; /* Standardized rounding */
-  padding: 16px 20px;
+/* CARD */
+
+.activity-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 18px 22px;
+  margin-left: 40px;
+  width: 100%;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  transition: 0.2s ease;
+}
+
+.activity-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.09);
+}
+
+/* USER */
+
+.activity-user {
   display: flex;
   align-items: center;
-  width: 100%;
-  max-width: 900px;
-  box-shadow: 0 4px 14px rgba(16, 24, 40, 0.08);
-  border: 1px solid #e5e7eb;
-  transition: transform 0.2s ease;
+  gap: 14px;
+  min-width: 220px;
 }
 
-.activity-details:hover {
-  transform: translateX(4px);
-  border-color: #6366f1;
-}
-
-.activity-img img {
+.activity-user img {
   width: 42px;
   height: 42px;
   border-radius: 50%;
   object-fit: cover;
+  border: 2px solid #eee;
 }
 
-.activity_details {
-  flex: 1;
-  margin-left: 14px;
-}
-
-.activity-user-name {
-  font-size: 14px;
+.activity-user h4 {
   margin: 0;
-  color: #101828;
-  font-weight: 500;
-}
-
-.activity-user-name span {
+  font-size: 15px;
+  color: #222;
   font-weight: 600;
 }
 
-.activity-action {
-  font-size: 15px;
-  color: #667085;
-  margin-top: 4px;
-  font-weight: 400;
+.activity-user span {
+  font-size: 12px;
+  color: #666;
 }
+
+/* CONTENT */
+
+.activity-content {
+  flex: 1;
+  padding: 0 20px;
+}
+
+.activity-text {
+  font-size: 14px;
+  color: #333;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.activity-text b {
+  color: #4f46e5;
+}
+
+/* TIME */
 
 .activity-time {
   font-size: 12px;
-  color: #667085;
-  white-space: nowrap;
-  margin-left: 24px;
+  color: #777;
+  min-width: 120px;
+  text-align: right;
+}
+
+/* EMPTY */
+
+.no-activity {
+  text-align: center;
+  color: #888;
+  margin-top: 40px;
+  font-size: 15px;
+}
+
+/* MOBILE */
+
+@media (max-width: 768px) {
+
+  .activity-timeline {
+    padding-left: 40px;
+  }
+
+  .activity-timeline::before {
+    left: 20px;
+  }
+
+  .activity-icon {
+    left: 4px;
+  }
+
+  .activity-card {
+    margin-left: 24px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .activity-time {
+    text-align: left;
+    width: 100%;
+  }
+
+  .activity-content {
+    padding: 0;
+  }
 }
