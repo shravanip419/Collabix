@@ -1,84 +1,137 @@
 import { useEffect, useState } from "react";
 import "./Activity.css";
+import api from "../api/axios";
 
 function Activity() {
+
   const [activities, setActivities] = useState([]);
-  const projectId = localStorage.getItem("activeProjectId");
+  const [projects, setProjects] = useState([]);
+  const [selectedProject, setSelectedProject] = useState("all");
+
+  // ✅ Safe fallback
+  const localName =
+    localStorage.getItem("username") ||
+    localStorage.getItem("userName") ||
+    "Unknown User";
 
   useEffect(() => {
-    if (!projectId) return;
+    fetchProjects();
+    fetchActivities();
+  }, []);
 
-    fetch(`http://localhost:5000/api/activities?projectId=${projectId}`)
-      .then(res => res.json())
-      .then(setActivities);
-  }, [projectId]);
+  useEffect(() => {
+    fetchActivities();
+  }, [selectedProject]);
 
-  if (!projectId) {
-    return (
-      <div className="activities">
-        <p style={{ textAlign: "center", color: "#888" }}>
-          Please select a project to view activities
-        </p>
-      </div>
-    );
-  }
+  const fetchProjects = async () => {
+    try {
+      const res = await api.get("/projects");
+      setProjects(res.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
-  const activityIcon = (type) => {
+  const fetchActivities = async () => {
+    try {
+      let url = "/activities";
+
+      if (selectedProject !== "all") {
+        url += `?projectId=${selectedProject}`;
+      }
+
+      const res = await api.get(url);
+      setActivities(res.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const getIcon = (type) => {
     if (type === "completed") return "✅";
     if (type === "assigned") return "👤";
     if (type === "updated") return "✏️";
     if (type === "created") return "🆕";
-  };
-
-
-  const getTitle = (activity) => {
-    const name = activity.user?.name || "Someone";
-
-    if (activity.type === "created")
-      return `${name} created ${activity.taskTitle}`;
-
-    if (activity.type === "completed")
-      return `${name} completed ${activity.taskTitle}`;
-
-    if (activity.type === "assigned")
-      return `${name} assigned ${activity.taskTitle}`;
-
-    return `${name} updated ${activity.taskTitle}`;
+    return "📌";
   };
 
   return (
-    <div className="activities">
-      {activities.map((activity) => (
-        <div key={activity._id} className="activity-card">
-          <div className="activity-type">
-            {activityIcon(activity.type)}
+    <div className="activity-page">
+
+      <div className="activity-header">
+
+        <h2>Activity Log</h2>
+
+        <select
+          value={selectedProject}
+          onChange={(e) => setSelectedProject(e.target.value)}
+          className="project-filter"
+        >
+          <option value="all">All Projects</option>
+
+          {projects.map((p) => (
+            <option key={p._id} value={p._id}>
+              {p.name}
+            </option>
+          ))}
+        </select>
+
+      </div>
+
+      <div className="activity-timeline">
+
+        {activities.length === 0 && (
+          <p className="no-activity">No activities found</p>
+        )}
+
+        {activities.map((a) => (
+
+          <div key={a._id} className="activity-item">
+
+            <div className="activity-icon">
+              {getIcon(a.type)}
+            </div>
+
+            <div className="activity-card">
+
+              <div className="activity-user">
+
+                <img
+                  src={a.user?.avatar || "https://i.pravatar.cc/150"}
+                  alt="user"
+                />
+
+                <div>
+                  {/* ✅ Safer name rendering */}
+                  <h4>
+                    {a.user?.name || localName}
+                  </h4>
+
+                  <span>
+                    {a.projectName || "General"}
+                  </span>
+                </div>
+
+              </div>
+
+              <div className="activity-content">
+
+                <p className="activity-text">
+                  {a.message} — <b>{a.taskTitle}</b>
+                </p>
+
+              </div>
+
+              <div className="activity-time">
+                {new Date(a.createdAt).toLocaleString()}
+              </div>
+
+            </div>
           </div>
+        ))}
 
-          <div className="activity-details">
-            <div className="activity-img">
-              <img
-                src={activity.user?.avatar || "https://i.pravatar.cc/150"}
-                alt={activity.user?.name}
-                className="activity-user-image"
-              />
-            </div>
+      </div>
 
-            <div className="activity_details">
-              <p className="activity-user-name">
-                {getTitle(activity)}
-              </p>
-
-              <p className="activity-action">
-                {activity.message}
-              </p>
-            </div>
-
-            <div className="activity-time">
-              {new Date(activity.createdAt).toLocaleString()}
-            </div>
-          </div>
-        </div>
-      ))}
     </div>
   );
 }
