@@ -1,7 +1,7 @@
 import "./Login.css";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../api/axios"
+import api from "../api/axios";
 import { useAuth } from "../context/AuthContext";
 
 export default function Signup() {
@@ -9,6 +9,7 @@ export default function Signup() {
   const pupilsRef = useRef([]);
   const shapesRef = useRef([]);
   const { login } = useAuth();
+
   const [step, setStep] = useState(1);
   const [focusField, setFocusField] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
@@ -25,6 +26,7 @@ export default function Signup() {
     avatar: "",
   });
 
+  /* 👁 Eye Movement */
   useEffect(() => {
     const handleMouseMove = (e) => {
       if (focusField) return;
@@ -55,7 +57,6 @@ export default function Signup() {
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, [focusField]);
 
-  /* 👁 Lock eyes */
   const lockEyes = (x) => {
     pupilsRef.current.forEach((pupil) => {
       if (!pupil) return;
@@ -65,35 +66,32 @@ export default function Signup() {
   };
 
   useEffect(() => {
-    if (focusField === "text") lockEyes(5);
     if (focusField === "password") lockEyes(-5);
     if (!focusField && !showPassword) lockEyes(0);
   }, [focusField, showPassword]);
 
-  const nextStep = (e) =>{
+  const nextStep = (e) => {
     e.preventDefault();
     setStep(2);
-  }
+  };
 
-  /* Submit */
+  /* 🚀 Submit */
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
       const { data } = await api.post("/auth/signup", formData);
+
       if (data.token) {
         localStorage.setItem("token", data.token);
       }
 
       login(data);
-      // setStep(2);
       navigate("/home");
     } catch (err) {
       alert(err.response?.data?.message || "Signup failed");
     }
   };
-
-
 
   return (
     <div className="login-page">
@@ -186,27 +184,16 @@ export default function Signup() {
                   />
 
                   <span
-                    onClick={() => {
-                      setShowPassword(!showPassword);
-                      lockEyes(-6);
-                    }}
+                    onClick={() => setShowPassword(!showPassword)}
                     style={{
                       position: "absolute",
                       right: "6px",
                       top: "50%",
                       transform: "translateY(-50%)",
                       cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
                     }}
                   >
-                    {showPassword ? (
-                      /* Monkey 🙈 */
-                      <span style={{ fontSize: "18px" }}>🙈</span>
-                    ) : (
-                      /* Eye 👁️ */
-                      <span style={{ fontSize: "18px" }}>👁️</span>
-                    )}
+                    {showPassword ? "🙈" : "👁️"}
                   </span>
                 </div>
 
@@ -263,6 +250,7 @@ export default function Signup() {
                 </button>
               </>
             )}
+
             <p className="signup-link">
               Already have an account?
               <span onClick={() => navigate("/login")}> Sign in</span>

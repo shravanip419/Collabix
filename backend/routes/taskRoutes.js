@@ -56,36 +56,36 @@ router.get("/", auth, async (req, res) => {
 /* CREATE TASK + ACTIVITY */
 router.post("/", auth, async (req, res) => {
   try {
+    const { title, projectId } = req.body;
 
-    // ✅ Get logged in user
+    if (!title || !projectId) {
+      return res.status(400).json({
+        message: "Title and projectId are required",
+      });
+    }
+
     const user = await User.findById(req.user.id);
 
     const task = await Task.create({
-      title: req.body.title,
+      title,
       status: req.body.status || "todo",
       priority: req.body.priority || "medium",
       description: req.body.description,
       dueDate: req.body.dueDate,
       assignee: req.body.assignee,
-
-      project: req.body.projectId,
+      project: projectId,   // 🔥 this must exist
       user: req.user.id,
     });
 
-    // ✅ CREATE ACTIVITY
     await Activity.create({
       type: "created",
       message: "created a new task",
       taskTitle: task.title,
       projectId: task.project,
       taskId: task._id,
-
       user: {
         id: user._id,
-
-        // ⭐ MAIN FIX HERE
-        name: user.fullName || user.name || user.username,
-
+        name: user.name || user.username,
         avatar: user.avatar || "https://i.pravatar.cc/150",
       },
     });
@@ -97,6 +97,7 @@ router.post("/", auth, async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
 
 /* UPDATE TASK */
 router.patch("/:id", auth, async (req, res) => {

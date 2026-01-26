@@ -5,7 +5,6 @@ import User from "../models/User.js";
 
 const router = express.Router();
 
-/* SIGNUP */
 router.post("/signup", async (req, res) => {
   try {
     const {
@@ -13,23 +12,33 @@ router.post("/signup", async (req, res) => {
       username,
       email,
       password,
-      jobTitle,
-      department,
-      organization,
-      location,
-      avatar
+      jobTitle = "",
+      department = "",
+      organization = "",
+      location = "",
+      avatar = ""
     } = req.body;
 
-    const exist = await User.findOne({ email });
+    if (!fullName || !username || !email || !password) {
+      return res.status(400).json({
+        message: "All required fields must be filled"
+      });
+    }
+
+    const exist = await User.findOne({
+      $or: [{ email }, { username }]
+    });
 
     if (exist) {
-      return res.status(400).json({ message: "User already exists" });
+      return res.status(400).json({
+        message: "User already exists"
+      });
     }
 
     const hash = await bcrypt.hash(password, 10);
 
     const user = await User.create({
-      fullName,
+      name: fullName,
       username,
       email,
       password: hash,
@@ -46,13 +55,11 @@ router.post("/signup", async (req, res) => {
       { expiresIn: "7d" }
     );
 
-    res.json({
+    res.status(201).json({
       token,
-
-      // ✅ MORE COMPLETE USER OBJECT
       user: {
         _id: user._id,
-        name: user.fullName,
+        name: user.name,
         username: user.username,
         email: user.email,
         avatar: user.avatar || ""
@@ -60,25 +67,35 @@ router.post("/signup", async (req, res) => {
     });
 
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error("Signup Error:", err);
+    res.status(500).json({ message: "Server error during signup" });
   }
 });
 
-/* LOGIN */
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    if (!email || !password) {
+      return res.status(400).json({
+        message: "Email and password are required"
+      });
+    }
+
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(400).json({ message: "Invalid credentials" });
+      return res.status(400).json({
+        message: "Invalid credentials"
+      });
     }
 
     const match = await bcrypt.compare(password, user.password);
 
     if (!match) {
-      return res.status(400).json({ message: "Invalid credentials" });
+      return res.status(400).json({
+        message: "Invalid credentials"
+      });
     }
 
     const token = jwt.sign(
@@ -87,13 +104,11 @@ router.post("/login", async (req, res) => {
       { expiresIn: "7d" }
     );
 
-    res.json({
+    res.status(200).json({
       token,
-
-      // ✅ MORE COMPLETE USER OBJECT
       user: {
         _id: user._id,
-        name: user.fullName,
+        name: user.name,
         username: user.username,
         email: user.email,
         avatar: user.avatar || ""
@@ -101,7 +116,8 @@ router.post("/login", async (req, res) => {
     });
 
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error("Login Error:", err);
+    res.status(500).json({ message: "Server error during login" });
   }
 });
 

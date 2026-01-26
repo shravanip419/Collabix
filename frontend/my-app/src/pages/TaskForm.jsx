@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import "./TaskForm.css";
 
-const TaskForm = ({ onClose, onSave, defaultStatus }) => {
+const TaskForm = ({ onClose, onSave, defaultStatus, projectId }) => {
+
   const [title, setTitle] = useState("");
   const [status, setStatus] = useState(defaultStatus);
   const [priority, setPriority] = useState("high");
@@ -9,23 +10,24 @@ const TaskForm = ({ onClose, onSave, defaultStatus }) => {
   const [assignee, setAssignee] = useState("");
   const [description, setDescription] = useState("");
 
-  // 🔥 CRITICAL FIX
   useEffect(() => {
     setStatus(defaultStatus);
   }, [defaultStatus]);
 
-  const handleSave = () => {
-    if (!title.trim()) return;
+const handleSave = () => {
+  if (!title.trim()) return;
 
-    onSave({
-      title,
-      status,
-      priority,
-      dueDate,
-      assignee,
-      description,
-    });
-  };
+  onSave({
+    title,
+    status,
+    priority,
+    dueDate,
+    assignee,
+    description,
+    projectId,   
+  });
+};
+
 
   return (
     <div className="task-form-overlay">
