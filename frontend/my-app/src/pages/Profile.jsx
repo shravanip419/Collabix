@@ -17,16 +17,24 @@ export default function Profile() {
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState({});
 
-  // 🔥 Fetch profile
-  useEffect(() => {
-    const fetchProfile = async () => {
+ useEffect(() => {
+  const fetchProfile = async () => {
+    try {
+      console.log("Fetching profile...");
       const res = await api.get("/users/me");
+      console.log("Response:", res.data);
+
       setUser(res.data.user);
       setTasks(res.data.tasks || []);
-      setFormData(res.data.user); // preload form
-    };
-    fetchProfile();
-  }, []);
+      setFormData(res.data.user);
+    } catch (error) {
+      console.error("Profile fetch failed:", error);
+    }
+  };
+
+  fetchProfile();
+}, []);
+
 
   const handleChange = e => {
     setFormData({ ...formData, [e.target.name]: e.target.value });

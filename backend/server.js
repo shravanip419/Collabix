@@ -12,28 +12,44 @@ import userRoutes from "./routes/userRoutes.js";
 dotenv.config();
 
 const app = express();
+
 app.use(
   cors({
-      origin: ["http://localhost:5173", "http://localhost:5174"],
+    origin: ["http://localhost:5173", "http://localhost:5174"],
     credentials: true,
   })
 );
 
 app.use(express.json());
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB connected"))
-  .catch(err => console.error("MongoDB error:", err));
 
-
+// Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
-
 app.use("/api/projects", projectRoutes);
 app.use("/api/tasks", taskRoutes);
 app.use("/api/activities", activityRoutes);
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () =>
-  console.log(`🚀 Server running on port ${PORT}`)
-);
+
+const startServer = async () => {
+  try {
+    if (!process.env.MONGO_URI) {
+      throw new Error("MONGO_URI is not defined in .env file");
+    }
+
+    await mongoose.connect(process.env.MONGO_URI);
+
+    console.log(" MongoDB connected");
+
+    app.listen(PORT, () => {
+      console.log(` Server running on port ${PORT}`);
+    });
+
+  } catch (error) {
+    console.error("Failed to connect to MongoDB:");
+    console.error(error.message);
+    process.exit(1); 
+  }
+};
+
+startServer();

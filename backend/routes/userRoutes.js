@@ -3,19 +3,19 @@ import User from "../models/User.js";
 import Task from "../models/Task.js";
 import auth from "../middleware/authMiddleware.js";
 
-
 const router = express.Router();
 
-/* GET logged-in user's profile */
 router.get("/me", auth, async (req, res) => {
   try {
-    console.log("USER ID FROM TOKEN:", req.userId);
+    console.log("USER ID FROM TOKEN:", req.user.id);
 
-    const user = await User.findById(req.userId);
-    console.log("USER FOUND:", user);
+    const user = await User.findById(req.user.id).select("-password");
 
-    const tasks = await Task.find({ createdBy: req.userId });
-    console.log("TASKS FOUND:", tasks.length);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const tasks = await Task.find({ createdBy: req.user.id });
 
     res.json({ user, tasks });
   } catch (err) {
@@ -24,8 +24,6 @@ router.get("/me", auth, async (req, res) => {
   }
 });
 
-
-/* UPDATE profile */
 router.put("/me", auth, async (req, res) => {
   try {
     const user = await User.findByIdAndUpdate(
@@ -36,7 +34,8 @@ router.put("/me", auth, async (req, res) => {
 
     res.json(user);
   } catch (err) {
-    res.status(500).json({ msg: "Update failed" });
+    console.error("UPDATE ERROR:", err);
+    res.status(500).json({ message: "Update failed" });
   }
 });
 
